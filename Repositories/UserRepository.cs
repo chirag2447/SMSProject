@@ -73,11 +73,24 @@ namespace SMSProject.Repository
             try
             {
                 conn.Open();
-                string query = "SELECT EXISTS(SELECT 1 FROM public.t_user WHERE c_gmail = @Gmail AND c_password = @Password)";
+                string query = "SELECT c_id, c_role, c_gmail FROM public.t_user WHERE c_gmail = @Gmail AND c_password = @Password";
                 var cmd = new NpgsqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@Gmail", userModel.c_gmail);
                 cmd.Parameters.AddWithValue("@Password", userModel.c_password);
-                return (bool)cmd.ExecuteScalar();
+                using (var reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        _accessor.HttpContext.Session.SetInt32("userid", Convert.ToInt32(reader["c_id"]));
+                        _accessor.HttpContext.Session.SetString("role", reader["c_role"].ToString());
+                        _accessor.HttpContext.Session.SetString("gmail", reader["c_gmail"].ToString());
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
             }
             catch (System.Exception ex)
             {
