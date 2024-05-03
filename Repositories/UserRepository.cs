@@ -1,9 +1,9 @@
 using Npgsql;
 using SMSProject.Models;
 
-namespace SMSProject.Repositories
+namespace SMSProject.Repository
 {
-    public class UserRepository
+    public class UserRepository : IUserRepository
     {
         private readonly NpgsqlConnection conn;
         private readonly IHttpContextAccessor _accessor;

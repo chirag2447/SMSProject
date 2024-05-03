@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using SMSProject.Models;
 
-namespace SMSProject.Repositories
+namespace SMSProject.Repository
 {
     public interface IUserRepository
     {
