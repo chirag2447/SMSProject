@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Npgsql" Version="8.0.2" />
+    <PackageReference Include="ReCAPTCHA.AspNetCore" Version="3.0.10" />
   </ItemGroup>
 
 </Project>
