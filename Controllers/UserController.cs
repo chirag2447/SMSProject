@@ -56,6 +56,19 @@ namespace SMSProject.Controllers
         }
 
         [HttpPost]
+        public IActionResult UploadPhoto(IFormFile Photo)
+        {
+            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(Photo.FileName);
+            var path = Path.Combine("wwwroot/images", fileName);
+            using (var stream = new FileStream(path, FileMode.Create))
+            {
+                Photo.CopyTo(stream);
+            }
+
+            return Ok(new { fileName = fileName });
+        }
+
+        [HttpPost]
         public IActionResult Login(UserModel usermodel)
         {
 
@@ -93,6 +106,24 @@ namespace SMSProject.Controllers
                 return View(model);
             }
             return RedirectToAction("Success");
+        }
+
+        public IActionResult GetAllCountries()
+        {
+            var countries = _userRepository.GetCountries();
+            return Json(countries);
+        }
+
+        public IActionResult GetStates(int countryid)
+        {
+            var states = _userRepository.GetStates(countryid);
+            return Json(states);
+        }
+
+        public IActionResult GetCities(int stateid)
+        {
+            var cities = _userRepository.GetCities(stateid);
+            return Json(cities);
         }
 
 

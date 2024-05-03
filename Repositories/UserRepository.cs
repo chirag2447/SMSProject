@@ -102,5 +102,102 @@ namespace SMSProject.Repository
                 conn.Close();
             }
         }
+
+        public List<CountryModel> GetCountries()
+        {
+            List<CountryModel> countries = new List<CountryModel>();
+            try
+            {
+                conn.Open();
+                string query = "SELECT * FROM public.t_country";
+                var cmd = new NpgsqlCommand(query, conn);
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        countries.Add(new CountryModel
+                        {
+                            c_id = Convert.ToInt32(reader["c_id"]),
+                            c_name = reader["c_name"].ToString()
+                        });
+                    }
+                }
+            }
+            catch (System.Exception ex)
+            {
+                System.Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return countries;
+        }
+
+        public List<StateModel> GetStates(int countryid)
+        {
+            List<StateModel> states = new List<StateModel>();
+            try
+            {
+                conn.Open();
+                string query = "SELECT * FROM public.t_state WHERE c_countryid = @CountryId";
+                var cmd = new NpgsqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@CountryId", countryid);
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        states.Add(new StateModel
+                        {
+                            c_id = Convert.ToInt32(reader["c_id"]),
+                            c_name = reader["c_name"].ToString(),
+                            c_countryid = Convert.ToInt32(reader["c_countryid"])
+                        });
+                    }
+                }
+            }
+            catch (System.Exception ex)
+            {
+                System.Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return states;
+        }
+
+        public List<CityModel> GetCities(int stateid)
+        {
+            List<CityModel> cities = new List<CityModel>();
+            try
+            {
+                conn.Open();
+                string query = "SELECT * FROM public.t_city WHERE c_stateid = @StateId";
+                var cmd = new NpgsqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@StateId", stateid);
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        cities.Add(new CityModel
+                        {
+                            c_id = Convert.ToInt32(reader["c_id"]),
+                            c_name = reader["c_name"].ToString(),
+                            c_stateid = Convert.ToInt32(reader["c_stateid"])
+                        });
+                    }
+                }
+            }
+            catch (System.Exception ex)
+            {
+                System.Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return cities;
+        }
     }
 }

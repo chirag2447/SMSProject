@@ -30,9 +30,9 @@
                         form: {
                             orientation: "vertical",
                             items: [
-                                { field: "c_country", label: "Country:", validation: { required: true } },
-                                { field: "c_state", label: "State:", validation: { required: true } },
-                                { field: "c_city", label: "City:", validation: { required: true } },
+                                { field: "c_country", label: "Country:", validation: { required: true }, editor: countryEditor },
+                                { field: "c_state", label: "State:", validation: { required: true }, editor: stateEditor },
+                                { field: "c_city", label: "City:", validation: { required: true }, editor: cityEditor },
                                 { field: "c_address", label: "Address:", validation: { required: true } },
                                 { field: "c_language", label: "Language:", validation: { required: true }, editor: languageeditor },
                                 { field: "c_qualification", label: "Qualification:", validation: { required: true } },
@@ -54,7 +54,7 @@
                                 c_role: ""
                             },
                             items: [
-                                { field: "c_id", label: "ID:", validation: { required: true } },
+            @* { field: "c_id", label: "ID:", validation: { required: true } }, *@
                                 { field: "c_gmail", label: "Email:", validation: { required: true, email: true } },
                                 { field: "c_password", label: "Password:", validation: { required: true }, hint: "Hint: enter alphanumeric characters only.", attributes: { type: "password" } },
                                 { field: "c_phone", label: "Phone:", validation: { required: true } }
@@ -94,7 +94,7 @@
             function photoeditor(container, options) {
                 $('<input name="Photo" type="file" />').appendTo(container).kendoUpload({
                     async: {
-                        saveUrl: "/StudentKendo/UploadPhoto",
+                        saveUrl: "/User/UploadPhoto",
                         autoUpload: true,
                     },
                     success: function (data) {
@@ -104,6 +104,74 @@
                     }
                 })
             }
+            function countryEditor(container, options) {
+                $('<input required name="' + options.field + '" id="c_country"/>')
+                    .appendTo(container)
+                    .kendoDropDownList({
+                        autoBind: true,
+                        dataTextField: "c_name",
+                        dataValueField: "c_id",
+                        dataSource: {
+                            transport: {
+                                read: {
+                                    url: "/User/GetAllCountries",
+                                    dataType: "json"
+                                }
+                            }
+                        }
+                    });
+            }
+
+            function stateEditor(container, options) {
+                $('<input required name="' + options.field + '" id="c_state"/>')
+                    .appendTo(container)
+                    .kendoDropDownList({
+                        autoBind: false,
+                        cascadeFrom: "c_country",
+                        optionLabel: "--Select State--",
+                        dataTextField: "c_name",
+                        dataValueField: "c_id",
+                        dataSource: {
+                            transport: {
+                                read: {
+                                    url: function () {
+                                        var countryDropdown = $("#c_country").data("kendoDropDownList");
+                                        var selectedCountry = countryDropdown.value();
+                                        return "/User/GetStates?countryId=" + selectedCountry;
+                                    },
+                                    dataType: "json"
+                                }
+                            },
+                            serverFiltering: true
+                        }
+                    });
+            }
+
+            function cityEditor(container, options) {
+                $('<input required name="' + options.field + '" id="c_city"/>')
+                    .appendTo(container)
+                    .kendoDropDownList({
+                        autoBind: false,
+                        cascadeFrom: "c_state",
+                        optionLabel: "--Select City--",
+                        dataTextField: "c_name",
+                        dataValueField: "c_id",
+                        dataSource: {
+                            transport: {
+                                read: {
+                                    url: function () {
+                                        var stateDropdown = $("#c_state").data("kendoDropDownList");
+                                        var selectedState = stateDropdown.value();
+                                        return "/User/GetCities?stateId=" + selectedState;
+                                    },
+                                    dataType: "json"
+                                }
+                            },
+                            serverFiltering: true
+                        }
+                    });
+            }
+
 
 
         </script>
