@@ -49,12 +49,45 @@ namespace SMSProject.Repositories
 
         public bool IsUser(string email)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                conn.Open();
+                string query = "SELECT EXISTS(SELECT 1 FROM public.t_user WHERE c_gmail = @Gmail)";
+                var cmd = new NpgsqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@Gmail", email);
+                return (bool)cmd.ExecuteScalar();
+            }
+            catch (System.Exception ex)
+            {
+                System.Console.WriteLine(ex.Message);
+                return false;
+            }
+            finally
+            {
+                conn.Close();
+            }
         }
 
         public bool Login(UserModel userModel)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                conn.Open();
+                string query = "SELECT EXISTS(SELECT 1 FROM public.t_user WHERE c_gmail = @Gmail AND c_password = @Password)";
+                var cmd = new NpgsqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@Gmail", userModel.c_gmail);
+                cmd.Parameters.AddWithValue("@Password", userModel.c_password);
+                return (bool)cmd.ExecuteScalar();
+            }
+            catch (System.Exception ex)
+            {
+                System.Console.WriteLine(ex.Message);
+                return false;
+            }
+            finally
+            {
+                conn.Close();
+            }
         }
     }
 }
