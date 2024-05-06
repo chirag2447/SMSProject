@@ -1,28 +1,9 @@
 <div id="example">
     <div class="demo-section" style="width:700px">
-<<<<<<< HEAD
-        <form id="wizard" style="width:500px; margin: 0 auto;" novalidate></form>
-    </div>
-    @section Scripts {
-        <script>
-
-            var captcha = Math.floor(100000 + Math.random() * 900000);
-
-            var countries = [
-                "France",
-                "Germany",
-                "Italy",
-                "Netherlands",
-                "Norway",
-                "Spain"
-            ];
-
-=======
         <form id="wizard" style="width:500px; margin: 0 auto;" novalidate asp-action="Register" method="post"></form>
     </div>
     @section Scripts {
         <script>
->>>>>>> 25a06f4384c79db4f11446bbdf3684bc68dfb825
             $("#wizard").kendoWizard({
                 pager: true,
                 done: function (e) {
@@ -31,21 +12,6 @@
                 },
                 steps: [
                     {
-<<<<<<< HEAD
-                        title: "Credential Details",
-                        buttons: ["next"],
-                        form: {
-                            orientation: "vertical",
-                            formData: {
-                                Username: "johny",
-                                Email: "john.doe@email.com",
-                                Password: "pass123",
-                            },
-                            items: [
-                                { field: "Username", label: "Username:", validation: { required: true } },
-                                { field: "Email", label: "Email:", validation: { required: true, email: true } },
-                                { field: "Password", label: "Password:", validation: { required: true }, hint: "Hint: enter alphanumeric characters only.", attributes: { type: "password" } }
-=======
                         title: "Personal Details (Part 1)",
                         buttons: ["next"],
                         form: {
@@ -55,44 +21,10 @@
                                 { field: "c_last_name", label: "Last Name:", validation: { required: true } },
                                 { field: "c_dob", title: "Date of Birth", label: "Date of Birth", template: "#= kendo.toString(kendo.parseDate(c_dob), 'yyyy-MM-dd') #", editor: dateeditor }, { field: "c_gender", label: "Gender:", validation: { required: true }, editor: gendereditor },
                                 { field: "c_age", label: "Age:", validation: { required: true } }
->>>>>>> 25a06f4384c79db4f11446bbdf3684bc68dfb825
                             ]
                         }
                     },
                     {
-<<<<<<< HEAD
-                        title: "Personal Details",
-                        buttons: ["previous", "done"],
-                        form: {
-                            orientation: "vertical",
-                            items: [
-                                { field: "FullName", label: "Full Name:", validation: { required: true } },
-                                {
-                                    field: "Country", label: "Country:", validation: { required: true }, editor: "AutoComplete",
-                                    editorOptions: {
-                                        dataSource: countries,
-                                        filter: "startswith",
-                                        placeholder: "Select country..."
-                                    }
-                                },
-                                {
-                                    field: "Gender",
-                                    label: "Gender:",
-                                    validation: { required: true },
-                                    editor: "RadioGroup",
-                                    editorOptions: {
-                                        items: ["Female", "Male", "Other"],
-                                        layout: "horizontal",
-                                        labelPosition: "before"
-                                    }
-                                },
-                                { field: "About", label: { text: "About:", optional: true } }
-                            ]
-                       }
-                    }
-                ]
-            });
-=======
                         title: "Additional Personal Details",
                         buttons: ["previous", "next"],
                         form: {
@@ -239,65 +171,12 @@
                         }
                     });
             }
->>>>>>> 25a06f4384c79db4f11446bbdf3684bc68dfb825
 
 
 
         </script>
     }
     <style>
-<<<<<<< HEAD
-        .payment-type input {
-            visibility: hidden;
-            position: absolute;
-        }
-
-        .justify-payment {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .card {
-            cursor: pointer;
-            background-size: auto;
-            background-repeat: no-repeat;
-            background-position: center;
-            display: inline-block;
-            width: 135px;
-            height: 70px;
-            border: 1px solid;
-            filter: brightness(1.8) grayscale(1) opacity(.7);
-            margin: 2px;
-        }
-
-        .card:hover {
-            filter: brightness(1.2) grayscale(.5) opacity(.9);
-        }
-
-        .card:focus {
-            box-shadow: 0 0 0 2px #d5d5d5;
-            outline: none;
-        }
-
-        .visa {
-            background-image: url(https://cdn-icons-png.flaticon.com/128/196/196578.png);
-        }
-
-        .mastercard {
-            background-image: url(https://cdn-icons-png.flaticon.com/128/196/196561.png);
-        }
-
-        .paypal {
-            background-image: url(https://cdn-icons-png.flaticon.com/128/196/196565.png);
-        }
-
-        .payment-type input:active+.card {
-            opacity: .9;
-        }
-
-        .payment-type input:checked+.card {
-            filter: none;
-=======
         .demo-section {
             width: 700px;
             margin: 0 auto;
@@ -309,7 +188,6 @@
         .k-form .k-form-field {
             display: block;
             margin-bottom: 10px;
->>>>>>> 25a06f4384c79db4f11446bbdf3684bc68dfb825
         }
     </style>
 </div>
