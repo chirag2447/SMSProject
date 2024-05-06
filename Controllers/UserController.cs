@@ -38,34 +38,33 @@ namespace SMSProject.Controllers
             return View();
         }
 
+        public static string profile = "";
+
         [HttpPost]
         public IActionResult Register(UserModel userModel)
         {
-            if (ModelState.IsValid)
-            {
+                userModel.c_profile = profile;
                 _userRepository.AddUser(userModel);
                 ViewBag.registersuccess = "Registration Successfully";
                 return View();
-            }
-            else
-            {
-                ViewBag.registererror = "Registration Failed";
-            }
-            return View();
-
+            
+           
+            
+         
         }
 
         [HttpPost]
         public IActionResult UploadPhoto(IFormFile Photo)
         {
-            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(Photo.FileName);
-            var path = Path.Combine("wwwroot/images", fileName);
+
+            var file = Guid.NewGuid().ToString() + Path.GetExtension(Photo.FileName);
+            var path = Path.Combine("wwwroot/images", file);
             using (var stream = new FileStream(path, FileMode.Create))
             {
                 Photo.CopyTo(stream);
             }
-
-            return Ok(new { fileName = fileName });
+            profile = file;
+            return Ok(new { fileName = file });
         }
 
         [HttpPost]
