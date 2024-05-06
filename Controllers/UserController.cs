@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
+using mvc.Models;
 
 namespace SMSProject.Controllers
 {
@@ -14,11 +15,22 @@ namespace SMSProject.Controllers
         private readonly IUserRepository _userRepository;
         private readonly IHttpContextAccessor _httpContextAccessor; // Add this
 
-        public UserController(ILogger<UserController> logger, IUserRepository userRepository, IHttpContextAccessor httpContextAccessor) // Modify this
+        protected readonly IWebHostEnvironment HostingEnvironment;
+        protected readonly string CaptchaPath;
+
+        public UserController(ILogger<UserController> logger, IUserRepository userRepository, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment env) // Modify this
         {
             _logger = logger;
             _userRepository = userRepository;
             _httpContextAccessor = httpContextAccessor; // Add this
+
+            HostingEnvironment = env;
+            CaptchaPath = Path.Combine(env.WebRootPath, "content", "captcha");
+
+            if (!Directory.Exists(CaptchaPath))
+            {
+                Directory.CreateDirectory(CaptchaPath);
+            }
         }
 
         public IActionResult Index()
@@ -43,14 +55,14 @@ namespace SMSProject.Controllers
         [HttpPost]
         public IActionResult Register(UserModel userModel)
         {
-                userModel.c_profile = profile;
-                _userRepository.AddUser(userModel);
-                ViewBag.registersuccess = "Registration Successfully";
-                return View();
-            
-           
-            
-         
+            userModel.c_profile = profile;
+            _userRepository.AddUser(userModel);
+            ViewBag.registersuccess = "Registration Successfully";
+            return View();
+
+
+
+
         }
 
         [HttpPost]
@@ -124,6 +136,67 @@ namespace SMSProject.Controllers
             var cities = _userRepository.GetCities(stateid);
             return Json(cities);
         }
+
+        [HttpGet]
+        public IActionResult Reset()
+        {
+            CaptchaModel newCaptcha = GetCaptchaModel();
+            var files = Directory.GetFiles(CaptchaPath).ToList();
+            string captchaText = System.IO.File.ReadAllText(files.First(x => x.Contains($"{newCaptcha.CaptchaID}.txt")));
+
+            HttpContext.Session.SetString("captcha" + newCaptcha.CaptchaID, captchaText);
+            var captchaText1 = HttpContext.Session.GetString("captcha" + newCaptcha.CaptchaID);
+
+            return Json(new
+            {
+                captchatext = captchaText,
+                captcha = Url.Content("~/content/captcha/" + newCaptcha.CaptchaID + ".png"),
+                captchaId = newCaptcha.CaptchaID
+            });
+        }
+
+        public IActionResult AudioHandler(string captchaId)
+        {
+            return Content(Url.Content("~/content/captcha/" + captchaId + ".wav"));
+        }
+
+        public IActionResult Validate(string captchaId, string captcha)
+        {
+            captcha = captcha ?? string.Empty;
+
+            return Json(IsCaptchaValid(captchaId, captcha));
+        }
+
+        private CaptchaModel GetCaptchaModel()
+        {
+            var model = new CaptchaModel();
+            Random rnd = new Random();
+            var files = Directory.GetFiles(CaptchaPath).ToList();
+            var randomCaptchaID = Path.GetFileNameWithoutExtension(files[rnd.Next(files.Count)]);
+
+            model.CaptchaID = randomCaptchaID;
+            model.Captcha = Url.Content("~/content/captcha/" + randomCaptchaID + ".png");
+
+            string captchaText = System.IO.File.ReadAllText(files.First(x => x.Contains($"{randomCaptchaID}.txt")));
+            HttpContext.Session.SetString("captcha_" + model.CaptchaID, captchaText);
+
+            return model;
+        }
+
+        private string GetCaptchaText(string captchaId)
+        {
+            string text = HttpContext.Session.GetString("captcha" + captchaId);
+
+            return text;
+        }
+
+        private bool IsCaptchaValid(string captchaId, string captcha)
+        {
+            string text = GetCaptchaText(captchaId);
+
+            return text == captcha.ToUpperInvariant();
+        }
+
 
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

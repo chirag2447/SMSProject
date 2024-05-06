@@ -8,6 +8,58 @@
 
 @section Scripts {
     <script>
+        var captchatext = "";
+        $(document).ready(function () {
+
+            $("#reset").click(function () {
+                $.ajax({
+                    url: "https://localhost:7163/user/reset",
+                    type: "GET",
+                    success: function (data) {
+                        console.log(data);
+                        $("input[name='captchaId']").val(data.captchaId);
+                        $('img').attr('src', data.captcha);
+                        captchatext = data.captchatext;
+        @* var captchaImage = $('<img>').attr('src', data.captcha);
+                        var captchaInput = $('<input>').attr({
+                        type: 'text',
+                        id: 'captchaInput',
+                        name: 'captchaInput',
+                        placeholder: 'Enter captcha'
+                        });
+                        captchaImage.appendTo('#captchaContainer');
+                        captchaInput.appendTo('#captchaContainer');
+                        $('#captchaInput').focus(); *@
+                                                                                                                    },
+                    error: function () {
+                        console.log('Error occurred while retrieving captcha.');
+                    }
+                });
+            })
+            $.ajax({
+                url: "https://localhost:7163/user/reset",
+                type: "GET",
+                success: function (data) {
+                    console.log(data);
+                    $("input[name='captchaId']").val(data.captchaId);
+                    $('img').attr('src', data.captcha);
+                    captchatext = data.captchatext;
+        @* var captchaImage = $('<img>').attr('src', data.captcha);
+                    var captchaInput = $('<input>').attr({
+                    type: 'text',
+                    id: 'captchaInput',
+                    name: 'captchaInput',
+                    placeholder: 'Enter captcha'
+                    });
+                    captchaImage.appendTo('#captchaContainer');
+                    captchaInput.appendTo('#captchaContainer');
+                    $('#captchaInput').focus(); *@
+                                                                                                                },
+                error: function () {
+                    console.log('Error occurred while retrieving captcha.');
+                }
+            });
+        });
         $("#form").kendoForm({
             orientation: "vertical",
             formData: {
@@ -51,7 +103,7 @@
                     label: "Captcha:",
                     validation: { required: true },
                     editor: function (container, options) {
-                        $('<div class="captcha-container"><button type="button" class="k-button attractive-button" id="CaptchaButton">Generate Captcha</button><div id="captchaDisplay"></div></div>')
+                        $('<div class="captcha-container">  <img style="height:3rem;border:1.5px solid black" src="" alt=""> <input type= "hidden" name = "captchaId" ><div><i id="reset" style="margin-left:1rem; font-size: 20px; color: orange;" class="fa-solid fa-arrows-rotate"></i></div><div id="captchaDisplay"></div></div > ')
                             .appendTo(container);
                     }
                 }
@@ -72,7 +124,7 @@
             var enteredCaptcha = $("#CaptchaText").val();
             var generatedCaptcha = $("#captchaDisplay").text();
 
-            if (enteredCaptcha !== generatedCaptcha) {
+            if (enteredCaptcha !== captchatext) {
                 event.preventDefault();
                 alert("The entered captcha does not match the generated captcha. Please try again.");
             }
