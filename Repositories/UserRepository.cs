@@ -34,7 +34,7 @@ namespace SMSProject.Repository
                 cmd.Parameters.AddWithValue("@Language", userModel.c_language);
                 cmd.Parameters.AddWithValue("@Qualification", userModel.c_qualification);
                 cmd.Parameters.AddWithValue("@Profile", userModel.c_profile);
-                cmd.Parameters.AddWithValue("@Role", userModel.c_role);
+                cmd.Parameters.AddWithValue("@Role", "User");
                 cmd.ExecuteNonQuery();
             }
             catch (System.Exception ex)
