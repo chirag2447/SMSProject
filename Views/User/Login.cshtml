@@ -89,6 +89,15 @@
                     }
                 },
                 {
+                    field: "Captcha",
+                    label: "Captcha:",
+                    validation: { required: true },
+                    editor: function (container, options) {
+                        $('<div class="captcha-container">  <img style="height:3rem;border:1.5px solid black" src="" alt=""> <input type= "hidden" name = "captchaId" ><div><i id="reset" style="margin-left:1rem; font-size: 20px; color: orange;" class="fa-solid fa-arrows-rotate"></i></div><div id="captchaDisplay"></div></div > ')
+                            .appendTo(container);
+                    }
+                },
+                {
                     field: "CaptchaText",
                     label: "Captcha:",
                     validation: { required: true },
@@ -97,16 +106,8 @@
                             .appendTo(container)
                             .kendoTextBox();
                     }
-                },
-                {
-                    field: "Captcha",
-                    label: "Captcha:",
-                    validation: { required: true },
-                    editor: function (container, options) {
-                        $('<div class="captcha-container">  <img style="height:3rem;border:1.5px solid black" src="" alt=""> <input type= "hidden" name = "captchaId" ><div><i id="reset" style="margin-left:1rem; font-size: 20px; color: orange;" class="fa-solid fa-arrows-rotate"></i></div><div id="captchaDisplay"></div></div > ')
-                            .appendTo(container);
-                    }
                 }
+                
             ],
             buttonsTemplate: "<button class='k-button k-button-solid-primary k-button-solid k-button-md k-rounded-md k-form-submit' type='submit'>Login</button>"
         });
