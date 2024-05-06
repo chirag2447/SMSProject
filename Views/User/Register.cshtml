@@ -1,5 +1,6 @@
 <div id="example">
     <div class="demo-section" style="width:700px">
+<<<<<<< HEAD
         <form id="wizard" style="width:500px; margin: 0 auto;" novalidate></form>
     </div>
     @section Scripts {
@@ -16,6 +17,12 @@
                 "Spain"
             ];
 
+=======
+        <form id="wizard" style="width:500px; margin: 0 auto;" novalidate asp-action="Register" method="post"></form>
+    </div>
+    @section Scripts {
+        <script>
+>>>>>>> 25a06f4384c79db4f11446bbdf3684bc68dfb825
             $("#wizard").kendoWizard({
                 pager: true,
                 done: function (e) {
@@ -24,6 +31,7 @@
                 },
                 steps: [
                     {
+<<<<<<< HEAD
                         title: "Credential Details",
                         buttons: ["next"],
                         form: {
@@ -37,10 +45,22 @@
                                 { field: "Username", label: "Username:", validation: { required: true } },
                                 { field: "Email", label: "Email:", validation: { required: true, email: true } },
                                 { field: "Password", label: "Password:", validation: { required: true }, hint: "Hint: enter alphanumeric characters only.", attributes: { type: "password" } }
+=======
+                        title: "Personal Details (Part 1)",
+                        buttons: ["next"],
+                        form: {
+                            orientation: "vertical",
+                            items: [
+                                { field: "c_first_name", label: "First Name:", validation: { required: true } },
+                                { field: "c_last_name", label: "Last Name:", validation: { required: true } },
+                                { field: "c_dob", title: "Date of Birth", label: "Date of Birth", template: "#= kendo.toString(kendo.parseDate(c_dob), 'yyyy-MM-dd') #", editor: dateeditor }, { field: "c_gender", label: "Gender:", validation: { required: true }, editor: gendereditor },
+                                { field: "c_age", label: "Age:", validation: { required: true } }
+>>>>>>> 25a06f4384c79db4f11446bbdf3684bc68dfb825
                             ]
                         }
                     },
                     {
+<<<<<<< HEAD
                         title: "Personal Details",
                         buttons: ["previous", "done"],
                         form: {
@@ -72,12 +92,161 @@
                     }
                 ]
             });
+=======
+                        title: "Additional Personal Details",
+                        buttons: ["previous", "next"],
+                        form: {
+                            orientation: "vertical",
+                            items: [
+                                { field: "c_country", label: "Country:", validation: { required: true }, editor: countryEditor },
+                                { field: "c_state", label: "State:", validation: { required: true }, editor: stateEditor },
+                                { field: "c_city", label: "City:", validation: { required: true }, editor: cityEditor },
+                                { field: "c_address", label: "Address:", validation: { required: true } },
+                                { field: "c_language", label: "Language:", validation: { required: true }, editor: languageeditor },
+                                { field: "c_qualification", label: "Qualification:", validation: { required: true } },
+                                { field: "c_profile", title: "Profile", editor: photoeditor, template: '<img src="/images/#=c_profile#" height="50px" width="50px" />' }
+
+                            ]
+                        }
+                    },
+                    {
+                        title: "Credential Details",
+                        buttons: ["previous", "done"],
+                        form: {
+                            orientation: "vertical",
+                            formData: {
+                                c_id: "",
+                                c_gmail: "",
+                                c_password: "",
+                                c_phone: "",
+                                c_role: ""
+                            },
+                            items: [
+            @* { field: "c_id", label: "ID:", validation: { required: true } }, *@
+                                { field: "c_gmail", label: "Email:", validation: { required: true, email: true } },
+                                { field: "c_password", label: "Password:", validation: { required: true }, hint: "Hint: enter alphanumeric characters only.", attributes: { type: "password" } },
+                                { field: "c_phone", label: "Phone:", validation: { required: true } }
+                            ]
+                        }
+                    }
+                ]
+            });
+            function dateeditor(container, options) {
+                var dob = options.model.c_dob ? kendo.toString(new Date(options.model.c_dob), 'yyyy/MM/dd') : new Date();
+
+                $('<input name="c_dob" data-format="yyyy/MM/dd" required="required" />').appendTo(container).kendoDatePicker({
+                    value: dob,
+                    format: "yyyy-MM-dd",
+                    change: function (e) {
+                        var parsedDate = kendo.toString(new Date(this.value()), 'yyyy/MM/dd');
+                        options.model.set("c_dob", parsedDate);
+                    },
+                });
+            }
+            function gendereditor(container, options) {
+                $('<input class="k-radio" id="male" name="gender" type="radio" value="Male" data-bind="checked:' + options.field + '"><label class="k-radio-label" for="male">Male</label>' +
+                    '<input class="k-radio" id="male" name="gender" type="radio" value="Female" data-bind="checked: ' + options.field + '"><label class="k-radio-label" for="female">Female</label>' +
+                    '<input class="k-radio" id="other" name="gender" type="radio" value="Others" data-bind="checked:' + options.field + '"><label class="k-radio-label" for="others">Others</label>').appendTo(container);
+            }
+            function languageeditor(container, options) {
+                var input = $('<input name="' + options.field + '"/>')
+                    .appendTo(container)
+                    .kendoMultiSelect({
+                        autoBind: true,
+
+                        dataSource: ['English', 'Hindi', 'Gujrati', 'Marathi'],
+                        value: options.model.c_language ? options.model.c_language.split(', ') : []
+
+                    });
+            }
+            function photoeditor(container, options) {
+                $('<input name="Photo" type="file" />').appendTo(container).kendoUpload({
+                    async: {
+                        saveUrl: "/User/UploadPhoto",
+                        autoUpload: true,
+                    },
+                    success: function (data) {
+                        var image = data.response.fileName;
+                        console.log(image);
+                        options.model.set("c_profile", image);
+                    }
+                })
+            }
+            function countryEditor(container, options) {
+                $('<input required name="' + options.field + '" id="c_country"/>')
+                    .appendTo(container)
+                    .kendoDropDownList({
+                        autoBind: true,
+                        dataTextField: "c_name",
+                        dataValueField: "c_id",
+                        dataSource: {
+                            transport: {
+                                read: {
+                                    url: "/User/GetAllCountries",
+                                    dataType: "json"
+                                }
+                            }
+                        }
+                    });
+            }
+
+            function stateEditor(container, options) {
+                $('<input required name="' + options.field + '" id="c_state"/>')
+                    .appendTo(container)
+                    .kendoDropDownList({
+                        autoBind: false,
+                        cascadeFrom: "c_country",
+                        optionLabel: "--Select State--",
+                        dataTextField: "c_name",
+                        dataValueField: "c_id",
+                        dataSource: {
+                            transport: {
+                                read: {
+                                    url: function () {
+                                        var countryDropdown = $("#c_country").data("kendoDropDownList");
+                                        var selectedCountry = countryDropdown.value();
+                                        return "/User/GetStates?countryId=" + selectedCountry;
+                                    },
+                                    dataType: "json"
+                                }
+                            },
+                            serverFiltering: true
+                        }
+                    });
+            }
+
+            function cityEditor(container, options) {
+                $('<input required name="' + options.field + '" id="c_city"/>')
+                    .appendTo(container)
+                    .kendoDropDownList({
+                        autoBind: false,
+                        cascadeFrom: "c_state",
+                        optionLabel: "--Select City--",
+                        dataTextField: "c_name",
+                        dataValueField: "c_id",
+                        dataSource: {
+                            transport: {
+                                read: {
+                                    url: function () {
+                                        var stateDropdown = $("#c_state").data("kendoDropDownList");
+                                        var selectedState = stateDropdown.value();
+                                        return "/User/GetCities?stateId=" + selectedState;
+                                    },
+                                    dataType: "json"
+                                }
+                            },
+                            serverFiltering: true
+                        }
+                    });
+            }
+>>>>>>> 25a06f4384c79db4f11446bbdf3684bc68dfb825
 
 
 
         </script>
     }
     <style>
+<<<<<<< HEAD
         .payment-type input {
             visibility: hidden;
             position: absolute;
@@ -128,6 +297,19 @@
 
         .payment-type input:checked+.card {
             filter: none;
+=======
+        .demo-section {
+            width: 700px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .k-form .k-form-field {
+            display: block;
+            margin-bottom: 10px;
+>>>>>>> 25a06f4384c79db4f11446bbdf3684bc68dfb825
         }
     </style>
 </div>

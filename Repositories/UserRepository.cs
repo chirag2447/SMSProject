@@ -1,9 +1,9 @@
 using Npgsql;
 using SMSProject.Models;
 
-namespace SMSProject.Repositories
+namespace SMSProject.Repository
 {
-    public class UserRepository
+    public class UserRepository : IUserRepository
     {
         private readonly NpgsqlConnection conn;
         private readonly IHttpContextAccessor _accessor;
@@ -73,11 +73,24 @@ namespace SMSProject.Repositories
             try
             {
                 conn.Open();
-                string query = "SELECT EXISTS(SELECT 1 FROM public.t_user WHERE c_gmail = @Gmail AND c_password = @Password)";
+                string query = "SELECT c_id, c_role, c_gmail FROM public.t_user WHERE c_gmail = @Gmail AND c_password = @Password";
                 var cmd = new NpgsqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@Gmail", userModel.c_gmail);
                 cmd.Parameters.AddWithValue("@Password", userModel.c_password);
-                return (bool)cmd.ExecuteScalar();
+                using (var reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        _accessor.HttpContext.Session.SetInt32("userid", Convert.ToInt32(reader["c_id"]));
+                        _accessor.HttpContext.Session.SetString("role", reader["c_role"].ToString());
+                        _accessor.HttpContext.Session.SetString("gmail", reader["c_gmail"].ToString());
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
             }
             catch (System.Exception ex)
             {
@@ -88,6 +101,103 @@ namespace SMSProject.Repositories
             {
                 conn.Close();
             }
+        }
+
+        public List<CountryModel> GetCountries()
+        {
+            List<CountryModel> countries = new List<CountryModel>();
+            try
+            {
+                conn.Open();
+                string query = "SELECT * FROM public.t_country";
+                var cmd = new NpgsqlCommand(query, conn);
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        countries.Add(new CountryModel
+                        {
+                            c_id = Convert.ToInt32(reader["c_id"]),
+                            c_name = reader["c_name"].ToString()
+                        });
+                    }
+                }
+            }
+            catch (System.Exception ex)
+            {
+                System.Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return countries;
+        }
+
+        public List<StateModel> GetStates(int countryid)
+        {
+            List<StateModel> states = new List<StateModel>();
+            try
+            {
+                conn.Open();
+                string query = "SELECT * FROM public.t_state WHERE c_countryid = @CountryId";
+                var cmd = new NpgsqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@CountryId", countryid);
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        states.Add(new StateModel
+                        {
+                            c_id = Convert.ToInt32(reader["c_id"]),
+                            c_name = reader["c_name"].ToString(),
+                            c_countryid = Convert.ToInt32(reader["c_countryid"])
+                        });
+                    }
+                }
+            }
+            catch (System.Exception ex)
+            {
+                System.Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return states;
+        }
+
+        public List<CityModel> GetCities(int stateid)
+        {
+            List<CityModel> cities = new List<CityModel>();
+            try
+            {
+                conn.Open();
+                string query = "SELECT * FROM public.t_city WHERE c_stateid = @StateId";
+                var cmd = new NpgsqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@StateId", stateid);
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        cities.Add(new CityModel
+                        {
+                            c_id = Convert.ToInt32(reader["c_id"]),
+                            c_name = reader["c_name"].ToString(),
+                            c_stateid = Convert.ToInt32(reader["c_stateid"])
+                        });
+                    }
+                }
+            }
+            catch (System.Exception ex)
+            {
+                System.Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return cities;
         }
     }
 }
