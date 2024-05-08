@@ -15,7 +15,7 @@ namespace mvc.Models
         public string c_gender { get; set; }//
         public int c_age { get; set; }
         public string c_address { get; set; }
-        public decimal c_contactno { get; set; }
+        public string c_contactno { get; set; }
         public string c_profile { get; set; }
         public string c_password { get; set; }
     }

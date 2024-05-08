@@ -59,7 +59,7 @@ namespace SMSProject.Repository
                                 c_gender = reader["c_gender"].ToString(),
                                 c_age = Convert.ToInt32(reader["c_age"]),
                                 c_address = reader["c_address"].ToString(),
-                                c_contactno = Convert.ToInt32(reader["c_contactno"]),
+                                c_contactno = reader["c_contactno"].ToString(),
                                 c_profile = reader["c_profile"].ToString(),
                                 c_password = reader["c_password"].ToString(),
                             };
@@ -84,8 +84,6 @@ namespace SMSProject.Repository
                 using NpgsqlConnection conn = new NpgsqlConnection(_conn);
                 conn.Open();
 
-                if (stud.c_contactno != null && stud.c_contactno is decimal)
-                {
                     using NpgsqlCommand cmd = new NpgsqlCommand("INSERT INTO t_student (c_userid,c_first_name,  c_last_name, c_dob, c_gender,c_age,c_address,c_contactno,c_profile,c_password) VALUES (@c_userid,@c_first_name,  @c_last_name, @c_dob, @c_gender,@c_age,@c_address,@c_contactno,@c_profile,@c_password)", conn);
                 cmd.Parameters.AddWithValue("@c_userid", stud.c_userid);
                 cmd.Parameters.AddWithValue("@c_first_name", stud.c_first_name);
@@ -100,12 +98,6 @@ namespace SMSProject.Repository
                 cmd.CommandType = CommandType.Text;
                 cmd.ExecuteNonQuery();
                 return true;
-                }
-                else
-                {
-                    Console.WriteLine("c_phoneno is null or not a numeric value.");
-                    return false;
-                }
 
                 
                 
