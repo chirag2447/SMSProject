@@ -1,0 +1,33 @@
+@model SMSProject.Models.UserModel
+
+@{
+    ViewBag.Title = "Profile";
+}
+
+<h1>@ViewBag.Title</h1>
+
+<div id="profile" data-bind="source: this" data-template="template"></div>
+
+@section Scripts{
+    <script>
+    var SMSProject = @Html.Raw(Json.Serialize(Model));
+</script>
+<script>
+    $(document).ready(function () {
+        kendo.bind($("#profile"), SMSProject);
+    });
+</script>
+
+<script type="text/x-kendo-template" id="template">
+    <img src="~/images/#: c_profile #" kendo-avatar shape="circle" width="100px" height="100px" />
+    <h2>#: c_first_name # #: c_last_name #</h2>
+    <p>Email: #: c_gmail #</p>
+    <p>Phone: #: c_phone #</p>
+    <p>Date of Birth: #: kendo.toString(new Date(c_dob), "MM/dd/yyyy") #</p>
+    <p>Gender: #: c_gender #</p>
+    <p>Age: #: c_age #</p>
+    <p>Address: #: c_address #</p>
+    <p>Qualification: #: c_qualification #</p>
+    <p>Role: #: c_role #</p>
+</script>
+}

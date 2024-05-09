@@ -160,12 +160,10 @@
                 }
 
                 function gendereditor(container, options) {
-                    $('<div class="gender-container" name="c_gender" required validationMessage="Gender is required">' +
-                        '<input class="k-radio" id="male" type="radio" value="Male" data-bind="checked:' + options.field + '"><label class="k-radio-label" for="male">Male</label>' +
-                        '<input class="k-radio" id="female" type="radio" value="Female" data-bind="checked: ' + options.field + '"><label class="k-radio-label" for="female">Female</label>' +
-                        '<input class="k-radio" id="others" type="radio" value="Others" data-bind="checked:' + options.field + '"><label class="k-radio-label" for="others">Others</label>' +
-                        '</div>').appendTo(container);
-                }
+                $('<input class="k-radio" id="male" name="c_gender" type="radio" value="Male" data-bind="checked:' + options.field + '"><label class="k-radio-label" for="male">Male</label>' +
+                    '<input class="k-radio" id="male" name="c_gender" type="radio" value="Female" data-bind="checked: ' + options.field + '"><label class="k-radio-label" for="female">Female</label>' +
+                    '<input class="k-radio" id="other" name="c_gender" type="radio" value="Others" data-bind="checked:' + options.field + '"><label class="k-radio-label" for="others">Others</label>').appendTo(container);
+            }
 
                 function languageeditor(container, options) {
                     var input = $('<input name="c_language"/>')
