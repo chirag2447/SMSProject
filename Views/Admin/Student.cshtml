@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2021.2.616/styles/kendo.common.min.css" />
+    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2021.2.616/styles/kendo.default.min.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://kendo.cdn.telerik.com/2021.2.616/js/kendo.all.min.js"></script>
+    <script src="https://unpkg.com/jszip/dist/jszip.min.js"></script>
+    <script src="https://unpkg.com/pako/dist/pako_deflate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
+
+
+</head>
+
+<body>
+    <h2 class="text-danger">@TempData["Userid"]</h2>
+    <div class="mb-3">
+        <h3>Student Details </h3>
+    </div>
+    <input type="text" id="searchInput" placeholder="Search..." class="form-control w-25 mb-2" />
+
+    <div id="grid"></div>
+    <div class="mt-2">
+        <button id="pagination-prev" class="btn btn-secondary">Previous</button>
+        <button id="pagination-next" class="btn btn-secondary">Next</button>
+    </div>
+
+    @section Scripts {
+        <script>
+            var dataSource;
+            var pageNumber = 1;
+            var pageSize = 10;
+            function multiDelete() {
+                var selectedIds = [];
+                var grid = $("#grid").data("kendoGrid");
+                var selectedItems = grid.select();
+
+                selectedItems.each(function (index, row) {
+                    var dataItem = grid.dataItem(row);
+                    selectedIds.push(dataItem.c_id);
+                });
+                console.log(selectedIds);
+
+                if (selectedIds.length === 0) {
+                    kendo.alert("Please select at least one record to delete.", "warning");
+                    return;
+                }
+
+                kendo.confirm('Are you sure you want to delete this record?').then(function () {
+                    console.log(selectedIds);
+                    $.ajax({
+                        url: "Multidelete",
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify(selectedIds),
+                        success: function (response) {
+                            kendo.alert("Data Deleted successfully.", "success");
+                            dataSource.read();
+                        },
+                        error: function (xhr, status, error) {
+                            console.error(error);
+                            kendo.alert("Error in Deleting Data", "error");
+                        }
+                    });
+                }).catch(function () {
+                    console.error("Delete operation cancelled.");
+                });
+            }
+
+            function loadData(pageNumber, pageSize) {
+                $.ajax({
+                    url: "Pagination",
+                    type: "GET",
+                    data: { pageNumber: pageNumber, pageSize: pageSize },
+                    success: function (response) {
+                        dataSource.data(response);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(error);
+                    }
+                });
+            }
+
+
+
+
+            $(document).ready(function () {
+
+                var searchInput = $("#searchInput");
+                searchInput.on("keypress", function (e) {
+                    if (e.which === 13) {
+                        var query = searchInput.val();
+                        $.ajax({
+                            url: "ViewDatasearch",
+                            type: "GET",
+                            data: { query: query },
+                            success: function (response) {
+                                dataSource.data(response);
+                            },
+                            error: function (xhr, status, error) {
+                                console.error(error);
+                            }
+                        });
+                    }
+                });
+
+
+
+
+                loadData(pageNumber, pageSize);
+
+                $("#pagination-prev").click(function () {
+                    pageNumber--;
+                    loadData(pageNumber, pageSize);
+                });
+
+                $("#pagination-next").click(function () {
+                    pageNumber++;
+                    loadData(pageNumber, pageSize);
+                });
+
+                var userId = parseInt('@TempData["Userid"]');
+                dataSource = new kendo.data.DataSource({
+                    transport: {
+                        read: {
+                            url: "ViewData",
+                            dataType: "json"
+                        },
+                        create: {
+                            url: "Student",
+                            type: "POST",
+                            dataType: "json"
+                        },
+                        destroy: {
+                            url: function (data) {
+                                return "Delete/" + data.c_id;
+                            },
+                            type: "POST",
+                            dataType: "json"
+                        },
+                        update: {
+                            url: "update",
+                            type: "POST",
+                            dataType: "json"
+                        }
+                    },
+                    pageSize: 10,
+                    schema: {
+                        model: {
+                            id: "c_id",
+                            fields: {
+                                c_id: { type: "number", editable: false, nullable: false },
+                                c_userid: { type: "number", defaultValue: userId, validation: { required: true } },
+                                c_first_name: { type: "string", validation: { required: true } },
+                                c_last_name: { type: "string", validation: { required: true } },
+                                c_dob: { type: "string", validation: { required: true } },
+                                c_gender: { type: "string", validation: { required: true } },
+                                c_age: { type: "string", validation: { required: true } },
+                                c_address: { type: "string", validation: { required: true } },
+                                c_contactno: { type: "string", validation: { required: true } },
+                                c_profile: { type: "string" },
+                            }
+                        }
+                    }
+                });
+
+                $("#grid").kendoGrid({
+                    dataSource: dataSource,
+                    columns: [
+                        { selectable: true, width: "50px" },
+                        { title: "SrNo", width: "50px" },
+                        { field: "c_id", title: "Bookid", hidden: true },
+                        { field: "c_first_name", title: "First Name" },
+                        { field: "c_last_name", title: "Last Name" },
+                        {
+                            field: "c_dob",
+                            title: "Date",
+                            template: "#= kendo.toString(new Date(c_dob), 'yyyy-MM-dd') #",
+                            editor: function (container, options) {
+                                var initialDate = options.model.c_dob ? kendo.toString(new Date(options.model.c_dob), 'yyyy/MM/dd') : kendo.toString(new Date(), 'yyyy/MM/dd');
+
+                                $('<input name="c_dob" required="required" />').appendTo(container).kendoDatePicker({
+                                    format: "yyyy/MM/dd",
+                                    value: initialDate,
+                                    change: function (e) {
+                                        var parsedDate = kendo.toString(new Date(this.value()), 'yyyy/MM/dd');
+                                        var dateOnly = parsedDate.split("T")[0];
+                                        options.model.set("c_dob", dateOnly);
+
+                                        var selectedDate = this.value();
+                                        var today = new Date();
+                                        var birthDate = new Date(selectedDate);
+                                        var age = today.getFullYear() - birthDate.getFullYear();
+                                        var m = today.getMonth() - birthDate.getMonth();
+                                        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                                            age--;
+                                        }
+                                        options.model.set("c_age", age);
+                                    }
+                                }).data("kendoDatePicker").trigger("change");
+                            }
+                        },
+                        {
+                            field: "c_gender",
+                            title: "State Type",
+                            editor: function (container, options) {
+                                $('<input type="radio" name="' + options.field + '" value="Male" required /> Male<br>').appendTo(container);
+                                $('<input type="radio" name="' + options.field + '" value="Female" required /> Female<br>').appendTo(container);
+                            },
+                            template: function (dataItem) {
+                                return dataItem.c_gender;
+                            }
+                        },
+                        { field: "c_age", title: "AGE", type: "number" },
+                        { field: "c_address", title: "Address", },
+                        { field: "c_contactno", title: "Phone no" },
+                        {
+                            field: "c_profile",
+                            title: "Photo",
+                            template: function (dataItem) {
+                                return "<img src='/photos/" + dataItem.c_profile + "' alt='Photo' style='max-width: 100px; max-height: 100px;'/>";
+                            },
+                            editor: function (container, options) {
+                                var input = $('<input name="' + options.field + '" type="file"  />').appendTo(container);
+                                if (options.model.c_profile) {
+                                    var currentImage = $("<img src='/photos/" + options.model.c_profile + "' alt='Photo' style='max-width: 100px; max-height: 100px;'/>");
+                                    container.append(currentImage);
+                                }
+                                input.change(function () {
+                                    var formData = new FormData();
+                                    formData.append("photo", input[0].files[0]);
+
+                                    $.ajax({
+                                        url: "UploadPhoto",
+                                        type: "POST",
+                                        data: formData,
+                                        contentType: false,
+                                        processData: false,
+                                        success: function (response) {
+                                            options.model.set("c_profile", response.filename);
+
+                                            if (currentImage) {
+                                                currentImage.attr('src', '/photos/' + response.filename);
+                                            } else {
+                                                currentImage = $("<img src='/photos/" + response.filename + "' alt='Photo' style='max-width: 100px; max-height: 100px;'/>");
+                                                container.append(currentImage);
+                                            }
+                                        },
+                                        error: function (xhr, status, error) {
+                                            console.error("Error uploading photo:", error);
+                                        }
+                                    });
+                                });
+                            }
+                        },
+
+
+                        { command: ["edit", "destroy"], title: "&nbsp;", width: "200px" }
+                    ],
+                    dataBound: function (e) {
+                        var grid = e.sender;
+                        $(grid.tbody).find("tr").each(function (index) {
+                            $(this).find("td:nth-child(2)").text(index + 1 + grid.dataSource.pageSize() * (grid.dataSource.page() - 1));
+                        });
+                    },
+                    editable: {
+                        mode: "popup",
+                        window: {
+                            title: "Add"
+                        }
+                    },
+                    edit: function (e) {
+                        var popupWindow = this.editable.element.data("kendoWindow");
+                        if (e.model.isNew()) {
+                            popupWindow.title("Add");
+                            e.container.find(".k-grid-update").text("Create");
+                        } else {
+                            popupWindow.title("Update");
+                        }
+                        e.container.find(".k-edit-label:contains('SrNo')").css("display", "none");
+                        e.container.find(".k-edit-label:contains('SrNo')").next(".k-edit-field").css("display", "none");
+                        e.container.find(".k-edit-label:contains('Bookid')").css("display", "none");
+                        e.container.find(".k-edit-label:contains('Bookid')").next(".k-edit-field").css("display", "none");
+
+
+                    },
+                    toolbar: [{ name: "create", text: "Add Data" }],
+                    sortable: true,
+                    filterable: true,
+                });
+
+                dataSource.bind("requestEnd", function (e) {
+                    if (e.type === "create" || e.type === "update" || e.type === "destroy") {
+                        dataSource.read();
+                    }
+                });
+            });
+        </script>
+    }
+</body>
+
+</html>
