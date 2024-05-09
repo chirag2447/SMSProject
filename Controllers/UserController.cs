@@ -73,7 +73,7 @@ namespace SMSProject.Controllers
 
             if (_userRepository.Login(usermodel))
             {
-                ViewBag.loginsuccess = "Login Successfully";
+                TempData["loginsuccess"] = "Login Successfully";
                 return View();
             }
             else

@@ -3,6 +3,10 @@
     <div id="validation-success"></div>
 
     <form id="form" action="/user/login" method="POST">
+    @if(TempData["loginsuccess"] != null)
+    {
+        <div class="alert alert-success">@TempData["loginsuccess"]</div>
+    }
     </form>
 </div>
 
@@ -19,7 +23,7 @@
                 {
                     field: "c_gmail",
                     label: "Email:",
-                    validation: { required: true, email: true },
+                    validation: { required: "Email is required", email: true },
                     editor: function (container, options) {
                         $('<input type="email" id="Email" name="' + options.field + '" title="Email" required="required" autocomplete="off" aria-labelledby="Email-form-label" data-bind="value: Email" aria-describedby="Email-form-hint" placeholder="Email Address"/>')
                             .appendTo(container)
@@ -29,7 +33,7 @@
                 {
                     field: "c_password",
                     label: "Password:",
-                    validation: { required: true, password: true },
+                    validation: { required: "Password is required", password: true },
                     editor: function (container, options) {
                         $('<input type="password" id="Password" name="' + options.field + '" title="Password" required="required" autocomplete="off" aria-labelledby="Password-form-label" data-bind="value: Password" aria-describedby="Password-form-hint" placeholder="Password"/>')
                             .appendTo(container)
@@ -58,16 +62,29 @@
             ],
             buttonsTemplate: "<button class='k-button k-button-solid-primary k-button-solid k-button-md k-rounded-md k-form-submit' type='submit'>Login</button>"
         });
-        $("#form").kendoValidator();
+        $("#form").kendoValidator({
+            rules: {
+                password: function (input) {
+                    if (input.is("[name='c_password']")) {
+                        return input.val().length >= 6; // Change 6 to your desired minimum password length
+                    }
+                    return true;
+                }
+            },
+            messages: {
+                password: "Password must be at least 6 characters long." // Change the message as needed
+            }
+        });
 
-        // Attach click event to the CaptchaButton
+
+
         $("#CaptchaButton").click(function () {
             $.get('/User/GenerateCaptcha', function (data) {
                 $('#captchaDisplay').text(data);
             });
         });
 
-        // Captcha validation
+
         $("#form").submit(function (event) {
             var enteredCaptcha = $("#CaptchaText").val();
             var generatedCaptcha = $("#captchaDisplay").text();
