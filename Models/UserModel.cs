@@ -20,6 +20,9 @@ namespace SMSProject.Models
         public string[] c_language { get; set; }
         public string c_qualification { get; set; }
         public string c_profile { get; set; }
+        public IFormFile Photo {get ; set;}
         public string c_role { get; set; }
+        public string CaptchaText { get; set; }
+
     }
 }

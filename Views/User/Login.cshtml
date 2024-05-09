@@ -1,0 +1,136 @@
+<div id="example">
+    <h2>Login</h2>
+    <div id="validation-success"></div>
+
+    <form id="form" action="/user/login" method="POST">
+    @if(TempData["loginsuccess"] != null)
+    {
+        <div class="alert alert-success">@TempData["loginsuccess"]</div>
+    }
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        $("#form").kendoForm({
+            orientation: "vertical",
+            formData: {
+                c_email: "",
+                c_password: "",
+                Captcha: ""
+            },
+            items: [
+                {
+                    field: "c_gmail",
+                    label: "Email:",
+                    validation: { required: "Email is required", email: true },
+                    editor: function (container, options) {
+                        $('<input type="email" id="Email" name="' + options.field + '" title="Email" required="required" autocomplete="off" aria-labelledby="Email-form-label" data-bind="value: Email" aria-describedby="Email-form-hint" placeholder="Email Address"/>')
+                            .appendTo(container)
+                            .kendoTextBox();
+                    }
+                },
+                {
+                    field: "c_password",
+                    label: "Password:",
+                    validation: { required: "Password is required", password: true },
+                    editor: function (container, options) {
+                        $('<input type="password" id="Password" name="' + options.field + '" title="Password" required="required" autocomplete="off" aria-labelledby="Password-form-label" data-bind="value: Password" aria-describedby="Password-form-hint" placeholder="Password"/>')
+                            .appendTo(container)
+                            .kendoTextBox();
+                    }
+                },
+                {
+                    field: "CaptchaText",
+                    label: "Captcha:",
+                    validation: { required: true },
+                    editor: function (container, options) {
+                        $('<input type="text" id="CaptchaText" name="' + options.field + '" title="Captcha" required="required" autocomplete="off" aria-labelledby="CaptchaText-form-label" data-bind="value: CaptchaText" aria-describedby="CaptchaText-form-hint" placeholder="Enter captcha"/>')
+                            .appendTo(container)
+                            .kendoTextBox();
+                    }
+                },
+                {
+                    field: "Captcha",
+                    label: "Captcha:",
+                    validation: { required: true },
+                    editor: function (container, options) {
+                        $('<div class="captcha-container"><button type="button" class="k-button attractive-button" id="CaptchaButton">Generate Captcha</button><div id="captchaDisplay"></div></div>')
+                            .appendTo(container);
+                    }
+                }
+            ],
+            buttonsTemplate: "<button class='k-button k-button-solid-primary k-button-solid k-button-md k-rounded-md k-form-submit' type='submit'>Login</button>"
+        });
+        $("#form").kendoValidator({
+            rules: {
+                password: function (input) {
+                    if (input.is("[name='c_password']")) {
+                        return input.val().length >= 6; // Change 6 to your desired minimum password length
+                    }
+                    return true;
+                }
+            },
+            messages: {
+                password: "Password must be at least 6 characters long." // Change the message as needed
+            }
+        });
+
+
+
+        $("#CaptchaButton").click(function () {
+            $.get('/User/GenerateCaptcha', function (data) {
+                $('#captchaDisplay').text(data);
+            });
+        });
+
+
+        $("#form").submit(function (event) {
+            var enteredCaptcha = $("#CaptchaText").val();
+            var generatedCaptcha = $("#captchaDisplay").text();
+
+            if (enteredCaptcha !== generatedCaptcha) {
+                event.preventDefault();
+                alert("The entered captcha does not match the generated captcha. Please try again.");
+            }
+        });
+    </script>
+    <style>
+        #example {
+            margin: 50px auto;
+            max-width: 400px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        #example h2 {
+            margin: 0 0 20px;
+            color: #FF6358;
+        }
+
+        .k-form-field {
+            margin-bottom: 15px;
+        }
+
+        .k-textbox {
+            width: calc(100% - 90px);
+            margin-right: 10px;
+        }
+
+        .k-button {
+            vertical-align: bottom;
+        }
+
+        .captcha-container {
+            display: flex;
+            align-items: center;
+        }
+
+        #captchaDisplay {
+            margin-left: 10px;
+            font-size: 18px;
+        }
+    </style>
+}
