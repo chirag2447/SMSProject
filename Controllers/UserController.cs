@@ -88,11 +88,6 @@ namespace SMSProject.Controllers
             {
                 if (HttpContext.Session.GetString("role") == "Admin")
                 {
-                    return RedirectToAction("index", "admin");
-                }
-                else
-                {
-
                     ViewBag.loginsuccess = "Login Successfully";
                     return RedirectToAction("Student", "Admin");
                 }

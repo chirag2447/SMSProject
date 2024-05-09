@@ -271,7 +271,10 @@ namespace SMSProject.Repository
                 using (var con = new NpgsqlConnection(_conn))
                 {
                     con.Open();
-                    using (var cmd = new NpgsqlCommand("SELECT * FROM t_student", con))
+                    using (var cmd = new NpgsqlCommand(@"SELECT s.c_id, s.c_userid, s.c_first_name, s.c_last_name, s.c_age , s.c_dob, s.c_gender, s.c_address , s.c_contactno,
+u.c_id,u.c_first_name,  u.c_last_name, u.c_age, u.c_dob, u.c_gender, u.c_address , u.c_phone
+FROM t_student s
+JOIN t_user u ON s.c_userid = u.c_id", con))
                     {
                         var reader = cmd.ExecuteReader();
                         List<TreeModel> students = new List<TreeModel>();
@@ -283,13 +286,19 @@ namespace SMSProject.Repository
                                 c_userid = reader.IsDBNull(1) ? (int?)null : reader.GetInt32(1),
                                 c_first_name = reader.GetString(2),
                                 c_last_name = reader.GetString(3),
-                                c_dob = reader.GetDateTime(4),
-                                c_gender = reader.GetString(5),
-                                c_age = reader.GetInt32(6),
+                                c_age = reader.GetInt32(4),
+                                c_dob = reader.GetDateTime(5),
+                                c_gender = reader.GetString(6),
                                 c_address = reader.GetString(7),
                                 c_contact_number = reader.GetString(8),
-                                c_profile = reader.GetString(9),
-                                c_password = reader.GetString(10)
+                                c_user_id = reader.GetInt32(9),
+                                c_user_first_name = reader.GetString(10),
+                                c_user_last_name = reader.GetString(11),
+                                c_user_age = reader.GetInt32(12),
+                                c_user_dob = reader.GetDateTime(13),
+                                c_user_gender = reader.GetString(14),
+                                c_user_address = reader.GetString(15),
+                                c_phone = reader.GetString(16)
                             };
                             students.Add(student);
                         }

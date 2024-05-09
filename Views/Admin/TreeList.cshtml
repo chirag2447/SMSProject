@@ -1,67 +1,58 @@
-@{
-    Layout = "_layout";
-}
-<div id="example">
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 
+<div id="example">
     <div id="treelist"></div>
 
     <script id="photo-template" type="text/x-kendo-template">
-           <div class='employee-photo'
-                style='background-image: url(../content/web/treelist/people/#:data.c_id#.jpg);'></div>
-           <div class='employee-name'>#: c_first_name # #: c_last_name #</div>
+     
+       <div class='employee-name'>#: c_user_first_name #</div>
     </script>
-    @section Scripts {
 
-        <script>
-            $(document).ready(function () {
-                var dataSource = new kendo.data.TreeListDataSource({
-                    transport: {
-                        read: {
-                            url: "https://localhost:7163/admin/getstudents",
-                            dataType: "json",
-                            error: function (e) {
-                                console.error("An error occurred while fetching the data: ", e);
-                            },
-                            success: function (data) {
-                                console.log("Data fetched from the server: ", data);
-                            }
-                        }
-                    },
-                    schema: {
-                        model: {
-                            id: "c_id",
-                            parentId: "c_userid",
-                            fields: {
-                                c_id: { type: "number" },
-                                c_userid: { nullable: true, type: "number" },
-                                c_first_name: { type: "string" },
-                                c_last_name: { type: "string" },
-                                c_dob: { type: "date" },
-                                c_gender: { type: "string" },
-                                c_age: { type: "number" },
-                                c_address: { type: "string" },
-                                c_contact_number: { type: "string" },
-                                // Add other fields as necessary
-                            }
-                        }
+   <script>
+    $(document).ready(function() {
+        $("#treelist").kendoTreeList({
+            dataSource: {
+                transport: {
+                    read: {
+                        url: "https://localhost:7163/admin/GetStudents",
+                        dataType: "jsonp"
                     }
-                });
-
-                $("#treelist").kendoTreeList({
-                    dataSource: dataSource,
-                    columns: [
-                        { field: "c_first_name", title: "First Name" },
-                        { field: "c_last_name", title: "Last Name" },
-                        { field: "c_dob", title: "Date of Birth", format: "{0:MM/dd/yyyy}" },
-                        { field: "c_gender", title: "Gender" },
-                        { field: "c_age", title: "Age" },
-                        { field: "c_address", title: "Address" },
-                        { field: "c_contact_number", title: "Contact Number" },
-                        // Add other fields as necessary
-                    ],
-                    template: kendo.template($("#photo-template").html())
-                });
-            });
-        </script>
-    }
+                },
+                schema: {
+                    model: {
+                        id: "c_id",
+                        parentId: "c_userid",
+                        fields: {
+                            c_userid: { field: "c_userid", nullable: true },
+                            c_user_first_name: { field: "c_user_first_name" },
+                            c_user_last_name: { field: "c_user_last_name" },
+                            c_user_age: { field: "c_user_age", type: "number" },
+                            c_user_dob: { field: "c_user_dob", type: "date" },
+                            c_user_gender: { field: "c_user_gender" },
+                            c_user_address: { field: "c_user_address" },
+                            c_phone: { field: "c_phone", type: "string" }
+                        },
+                        expanded: true
+                    }
+                }
+            },
+            height: 540,
+            filterable: true,
+            sortable: true,
+            columns: [
+                { field: "c_user_first_name", title: "First Name", width: 280, template: $("#photo-template").html() },
+                { field: "c_user_last_name", title: "Last Name", width: 160 },
+                { field: "c_user_age", title: "Age" },
+                { field: "c_phone", title: "Phone", width: 200 },
+                { field: "c_user_dob", title: "DOB", width: 140, format: "{0:MM/dd/yyyy}" },
+                { field: "c_user_gender", title: "Gender", width: 140 },
+                { field: "c_user_address", title: "Address" }
+            ],
+            pageable: {
+                pageSize: 15,
+                pageSizes: true
+            }
+        });
+    });
+</script>
 </div>

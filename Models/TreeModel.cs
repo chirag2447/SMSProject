@@ -13,8 +13,16 @@ namespace SMSProject.Models
         public int? c_age { get; set; }
         public string? c_address { get; set; }
         public string? c_contact_number { get; set; }
-        public string? c_profile { get; set; }
-        public string? c_password { get; set; }
+
+
+          public int c_user_id { get; set; }
+        public string c_user_first_name { get; set; }
+        public string c_user_last_name { get; set; }
+        public int c_user_age { get; set; }
+        public string c_user_address { get; set; }
+        public string c_user_gender { get; set; }
+        public DateTime c_user_dob { get; set; }
+        public string c_phone { get; set; }
 
         public int GetUserIdOrDefault()
         {
@@ -24,7 +32,6 @@ namespace SMSProject.Models
             }
             else
             {
-                // Return a default value when c_userid is null
                 return 0;
             }
         }
