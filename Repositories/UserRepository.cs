@@ -199,5 +199,56 @@ namespace SMSProject.Repository
             }
             return cities;
         }
+
+
+        public UserModel GetProfile(int userid)
+        {
+            try
+            {
+                conn.Open();
+                string query = "SELECT * FROM public.t_user WHERE c_id = @UserId";
+                var cmd = new NpgsqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@UserId", userid);
+                using (var reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        return new UserModel
+                        {
+                            c_id = Convert.ToInt32(reader["c_id"]),
+                            c_first_name = reader["c_first_name"].ToString(),
+                            c_last_name = reader["c_last_name"].ToString(),
+                            c_gmail = reader["c_gmail"].ToString(),
+                            c_password = reader["c_password"].ToString(),
+                            c_phone = reader["c_phone"].ToString(),
+                            c_dob = Convert.ToDateTime(reader["c_dob"]),
+                            c_gender = reader["c_gender"].ToString(),
+                            c_age = Convert.ToInt32(reader["c_age"]),
+                            c_country_id = Convert.ToInt32(reader["c_country_id"]),
+                            c_state_id = Convert.ToInt32(reader["c_state_id"]),
+                            c_city_id = Convert.ToInt32(reader["c_city_id"]),
+                            c_address = reader["c_address"].ToString(),
+                            c_language = reader["c_language"].ToString().Split(','),
+                            c_qualification = reader["c_qualification"].ToString(),
+                            c_profile = reader["c_profile"].ToString(),
+                            c_role = reader["c_role"].ToString()
+                        };
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+            }
+            catch (System.Exception ex)
+            {
+                System.Console.WriteLine(ex.Message);
+                return null;
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
     }
 }

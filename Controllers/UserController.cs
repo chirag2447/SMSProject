@@ -43,14 +43,14 @@ namespace SMSProject.Controllers
         [HttpPost]
         public IActionResult Register(UserModel userModel)
         {
-                userModel.c_profile = profile;
-                _userRepository.AddUser(userModel);
-                ViewBag.registersuccess = "Registration Successfully";
-                return View();
-            
-           
-            
-         
+            userModel.c_profile = profile;
+            _userRepository.AddUser(userModel);
+            ViewBag.registersuccess = "Registration Successfully";
+            return View();
+
+
+
+
         }
 
         [HttpPost]
@@ -125,6 +125,26 @@ namespace SMSProject.Controllers
             return Json(cities);
         }
 
+        [HttpGet]
+        public IActionResult Profile()
+        {
+            var sessionUserId = HttpContext.Session.GetInt32("userid");
+            if (sessionUserId.HasValue)
+            {
+                var profile = GetProfile(sessionUserId.Value);
+                return View(profile);
+            }
+            else
+            {
+                return RedirectToAction("Login", "User");
+            }
+        }
+
+        private UserModel GetProfile(int userid)
+        {
+            var profile = _userRepository.GetProfile(userid);
+            return profile;
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

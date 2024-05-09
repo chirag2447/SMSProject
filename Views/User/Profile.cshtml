@@ -6,28 +6,140 @@
 
 <h1>@ViewBag.Title</h1>
 
-<div id="profile" data-bind="source: this" data-template="template"></div>
+<div id="tabstrip">
+    <ul>
+        <li class="k-state-active">Personal Details</li>
+        <li>Credentials</li>
+    </ul>
+    <div>
+        <div id="personal-details" data-bind="source: this" data-template="personal-details-template" class="k-content"></div>
+    </div>
+    <div>
+        <div id="credentials" data-bind="source: this" data-template="credentials-template" class="k-content"></div>
+    </div>
+</div>
+
+<div id="font-size-slider"></div>
 
 @section Scripts{
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script>
     var SMSProject = @Html.Raw(Json.Serialize(Model));
-</script>
-<script>
+    </script>
+    <script>
     $(document).ready(function () {
-        kendo.bind($("#profile"), SMSProject);
-    });
-</script>
+        kendo.bind($("#personal-details"), SMSProject);
+        kendo.bind($("#credentials"), SMSProject);
+        $("#tabstrip").kendoTabStrip({
+            animation:  {
+                open: {
+                    effects: "fadeIn"
+                }
+            }
+        });
 
-<script type="text/x-kendo-template" id="template">
-    <img src="~/images/#: c_profile #" kendo-avatar shape="circle" width="100px" height="100px" />
-    <h2>#: c_first_name # #: c_last_name #</h2>
-    <p>Email: #: c_gmail #</p>
-    <p>Phone: #: c_phone #</p>
-    <p>Date of Birth: #: kendo.toString(new Date(c_dob), "MM/dd/yyyy") #</p>
-    <p>Gender: #: c_gender #</p>
-    <p>Age: #: c_age #</p>
-    <p>Address: #: c_address #</p>
-    <p>Qualification: #: c_qualification #</p>
-    <p>Role: #: c_role #</p>
-</script>
+        // Add color picker
+        $('#profileImage').click(function() {
+            $(this).css('border-color', '#' + Math.floor(Math.random()*16777215).toString(16));
+        });
+
+        // Add font size slider
+        $("#font-size-slider").kendoSlider({
+            min: 10,
+            max: 30,
+            smallStep: 1,
+            largeStep: 5,
+            value: 14,
+            tooltip: {
+                enabled: true,
+                format: "{0}px"
+            },
+            change: function(e) {
+                $('.k-card-body p').css('font-size', e.value + 'px');
+            }
+        });
+    });
+    </script>
+
+    <script type="text/x-kendo-template" id="personal-details-template">
+        <div class="k-card">
+            <div class="k-card-header">
+                <img id="profileImage" src="/images/#: c_profile #" kendo-avatar shape="circle" width="100px" height="100px" />
+                <h2 class="k-card-title">#: c_first_name # #: c_last_name #</h2>
+            </div>
+            <div class="k-card-body">
+                <p>Date of Birth: #: kendo.toString(new Date(c_dob), "MM/dd/yyyy") #</p>
+                <p>Gender: #: c_gender #</p>
+                <p>Age: #: c_age #</p>
+            </div>
+        </div>
+    </script>
+
+    <script type="text/x-kendo-template" id="credentials-template">
+        <div class="k-card">
+            <div class="k-card-body">
+                <p>Email: #: c_gmail #</p>
+                <p>Phone: #: c_phone #</p>
+                <p>Address: #: c_address #</p>
+                <p>Qualification: #: c_qualification #</p>
+                <p>Role: #: c_role #</p>
+            </div>
+            <div class="k-card-actions">
+                <button class="k-button k-primary">Button 1</button>
+                <button class="k-button k-primary">Button 2</button>
+                <button class="k-button k-primary">Button 3</button>
+                <button class="k-button k-primary">Button 4</button>
+            </div>
+        </div>
+    </script>
 }
+
+<style>
+    /* Existing styles... */
+
+    body {
+        font-family: Arial, sans-serif;
+    }
+
+    h1 {
+        color: #333;
+        text-align: center;
+        font-size: 2.5em;
+        margin-bottom: 20px;
+    }
+
+    #tabstrip {
+        border-radius: 10px;
+    }
+
+    .k-card {
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+    }
+
+    .k-card-header {
+        border-radius: 10px 10px 0 0;
+    }
+
+    .k-card-actions {
+        border-radius: 0 0 10px 10px;
+    }
+
+    .k-button {
+        border-radius: 5px;
+    }
+
+    #profileImage {
+        transition: border-color 0.5s ease;
+    }
+
+    #font-size-slider {
+        display: block;
+        margin: 20px auto;
+        width: 60%; /* Adjust this value as needed */
+        background: #f8f9fa;
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+    }
+</style>

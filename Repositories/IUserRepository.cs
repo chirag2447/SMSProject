@@ -11,6 +11,7 @@ namespace SMSProject.Repository
         public List<CountryModel> GetCountries();
         public List<StateModel> GetStates(int countryid);
         public List<CityModel> GetCities(int stateid);
+        public UserModel GetProfile(int userid);
         
 
 
