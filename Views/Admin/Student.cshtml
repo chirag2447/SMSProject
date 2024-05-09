@@ -2,10 +2,6 @@
 <html>
 
 <head>
-    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2021.2.616/styles/kendo.common.min.css" />
-    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2021.2.616/styles/kendo.default.min.css" />
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://kendo.cdn.telerik.com/2021.2.616/js/kendo.all.min.js"></script>
     <script src="https://unpkg.com/jszip/dist/jszip.min.js"></script>
     <script src="https://unpkg.com/pako/dist/pako_deflate.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
@@ -16,27 +12,38 @@
 </head>
 
 <body>
-    <h2 class="text-danger">@TempData["Userid"]</h2>
+    @* <h2 class="text-danger">@TempData["Userid"]</h2> *@
     <div class="mb-3">
         <h3>Student Details </h3>
     </div>
-    <div class="d-flex mb-3">
-    <button id="deleteSelected" onClick="multiDelete()" class="me-4 btn btn-danger">Delete Selected</button>
-    <input type="text" id="searchInput" placeholder="Search..." class="form-control w-25 mb-2" />
+    <div class="d-flex mb-3 ">
+        <button id="deleteSelected" onClick="multiDelete()" class=" btn btn-danger me-2">Delete Selected</button>
+        <button onClick="exportPDF()" class=" btn btn-success me-2">Export to PDF</button>
+        <input type="text" id="searchInput" placeholder="Search..." class="form-control w-25 mb-2" />
     </div>
+    <div id="notification"></div>
 
     <div id="grid"></div>
 
-    <div class="mt-2">
+    <div class="mt-2" id="select-button">
         <button id="pagination-prev" class="btn btn-secondary">Previous</button>
         <button id="pagination-next" class="btn btn-secondary">Next</button>
     </div>
 
     @section Scripts {
+        <script id="insert-success-template" type="text/x-kendo-template">
+        <div class="notification-popup p-3">
+            <h5>#= title #</h5>
+            <p>#= message #</p>
+        </div>
+    </script>
         <script>
             var dataSource;
             var pageNumber = 1;
             var pageSize = 10;
+
+
+
             function multiDelete() {
                 var selectedIds = [];
                 var grid = $("#grid").data("kendoGrid");
@@ -88,10 +95,48 @@
                 });
             }
 
+            function exportPDF() {
+                var jsPDF = window.jspdf.jsPDF;
+
+                var grid = $("#grid").data("kendoGrid");
+                var dataSource = grid.dataSource;
+
+                dataSource.fetch(function () {
+                    var data = dataSource.view();
+
+                    console.log("Data extracted from the grid:", data);
+
+                    var doc = new jsPDF();
+
+                    var headers = Object.keys(data[0].toJSON());
+
+                    var rows = [];
+                    data.forEach(function (item) {
+                        var row = [];
+                        headers.forEach(function (header) {
+                            row.push(item.get(header));
+                        });
+                        rows.push(row);
+                    });
+
+                    doc.autoTable({
+                        head: [headers],
+                        body: rows
+                    });
+
+                    doc.save("grid_data.pdf");
+                });
+            }
+
+
 
 
 
             $(document).ready(function () {
+
+                $("#select-button").kendoButtonGroup({
+                    index: 0
+                });
 
                 var searchInput = $("#searchInput");
                 searchInput.on("keypress", function (e) {
@@ -112,7 +157,19 @@
                 });
 
 
-
+                var notification = $("#notification").kendoNotification({
+                    position: {
+                        pinned: true,
+                        top: 30,
+                        right: 30
+                    },
+                    autoHideAfter: 3000,
+                    stacking: "down",
+                    templates: [{
+                        type: "insert-success",
+                        template: $("#insert-success-template").html()
+                    }]
+                }).data("kendoNotification");
 
                 loadData(pageNumber, pageSize);
 
@@ -136,19 +193,35 @@
                         create: {
                             url: "Student",
                             type: "POST",
-                            dataType: "json"
+                            dataType: "json",
+                            complete: function () {
+                                notification.show({ title: "Insert", message: "Data inserted successfully." }, "insert-success");
+
+                                dataSource.read();
+                            }
+
                         },
                         destroy: {
                             url: function (data) {
                                 return "Delete/" + data.c_id;
                             },
                             type: "POST",
-                            dataType: "json"
+                            dataType: "json",
+                            complete: function () {
+                                notification.show({ title: "Delete", message: "Data Deleted successfully." }, "insert-success");
+
+                                dataSource.read();
+                            }
                         },
                         update: {
                             url: "update",
                             type: "POST",
-                            dataType: "json"
+                            dataType: "json",
+                            complete: function () {
+                                notification.show({ title: "Update", message: "Data Updated successfully." }, "insert-success");
+
+                                dataSource.read();
+                            }
                         }
                     },
                     pageSize: 10,
@@ -157,14 +230,66 @@
                             id: "c_id",
                             fields: {
                                 c_id: { type: "number", editable: false, nullable: false },
-                                c_userid: { type: "number", defaultValue: userId, validation: { required: true } },
-                                c_first_name: { type: "string", validation: { required: true } },
-                                c_last_name: { type: "string", validation: { required: true } },
-                                c_dob: { type: "string", validation: { required: true } },
+                                c_userid: { type: "number" },
+                                c_first_name: {
+                                    type: "string", validation: {
+                                        required: true,
+                                        firstnamevalidation: function (input) {
+                                            if (input.is("[name='c_first_name']") && input.val() != "") {
+                                                input.attr("data-productnamevalidation-msg", " Name should start with capital letter And also contains Alpha ");
+                                                return /^[A-Z][A-Za-z]*$/.test(input.val());
+                                            }
+
+                                            return true;
+                                        }
+                                    }
+                                },
+                                c_last_name: {
+                                    type: "string", validation: {
+                                        required: true,
+                                        lastnamevalidation: function (input) {
+                                            if (input.is("[name='c_last_name']") && input.val() != "") {
+                                                input.attr("data-productnamevalidation-msg", " Name should start with capital letter And also contains Alpha ");
+                                                return /^[A-Z][A-Za-z]*$/.test(input.val());
+                                            }
+
+                                            return true;
+                                        }
+                                    }
+                                },
+                                c_dob: {
+                                    type: "string",
+                                    validation: {
+                                        required: true,
+                                        dateValidation: function (input) {
+                                            if (input.is("[name='c_dob']") && input.val() != "") {
+                                                var currentDate = new Date();
+                                                var selectedDate = new Date(input.val());
+                                                if (selectedDate > currentDate) {
+                                                    input.attr("data-datevalidation-msg", "Date cannot be in the future");
+                                                    return false;
+                                                }
+                                            }
+                                            return true;
+                                        }
+                                    }
+                                },
                                 c_gender: { type: "string", validation: { required: true } },
-                                c_age: { type: "string", validation: { required: true } },
+                                c_age: { type: "string", validation: { required: true }, attributes: { disabled: true } },
                                 c_address: { type: "string", validation: { required: true } },
-                                c_contactno: { type: "string", validation: { required: true } },
+                                c_contactno: {
+                                    type: "string",
+                                    validation: {
+                                        required: true,
+                                        contactNoValidation: function (input) {
+                                            if (input.is("[name='c_contactno']") && input.val() != "") {
+                                                input.attr("data-contactnovalidation-msg", "Contact No. must be 10 digits");
+                                                return /^\d{10}$/.test(input.val());
+                                            }
+                                            return true;
+                                        }
+                                    }
+                                },
                                 c_profile: { type: "string" },
                             }
                         }
@@ -176,6 +301,29 @@
                     columns: [
                         { selectable: true, width: "50px" },
                         { title: "SrNo", width: "50px" },
+                        {
+                            field: "c_userid",
+                            title: "Teacher NAme",
+                            editor: function (container, options) {
+                                $('<input name="' + options.field + '" class="k-input k-textbox" required/>').appendTo(container).kendoDropDownList({
+                                    dataSource: {
+                                        transport: {
+                                            read: {
+                                                url: "ViewTeacherData",
+                                                dataType: "json"
+                                            }
+                                        }
+                                    },
+                                    dataTextField: "c_first_name",
+                                    dataValueField: "c_id",
+                                    optionLabel: "--Select--",
+                                    required: true
+                                });
+                            },
+                            template: function (dataItem) {
+                                return dataItem.c_user_first_name;
+                            }
+                        },
                         { field: "c_id", title: "Bookid", hidden: true },
                         { field: "c_first_name", title: "First Name" },
                         { field: "c_last_name", title: "Last Name" },
@@ -218,7 +366,14 @@
                                 return dataItem.c_gender;
                             }
                         },
-                        { field: "c_age", title: "AGE", type: "number" },
+                        {
+                            field: "c_age",
+                            title: "AGE",
+                            template: function (dataItem) {
+                                return dataItem.c_age + " years";
+                            },
+
+                        },
                         { field: "c_address", title: "Address", },
                         { field: "c_contactno", title: "Phone no" },
                         {

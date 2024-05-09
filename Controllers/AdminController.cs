@@ -28,6 +28,10 @@ namespace SMSProject.Controllers
         {
             return View();
         }
+        public IActionResult PdfViewer()
+        {
+            return View();
+        }
         public IActionResult Student()
         {
             TempData["Userid"] = HttpContext.Session.GetInt32("userid");
@@ -92,6 +96,11 @@ namespace SMSProject.Controllers
         public IActionResult ViewData()
         {
             var datas = _adminRepository.GetAllData();
+            return Json(datas);
+        }
+        public IActionResult ViewTeacherData()
+        {
+            var datas = _adminRepository.GetAllTeacherData();
             return Json(datas);
         }
 
