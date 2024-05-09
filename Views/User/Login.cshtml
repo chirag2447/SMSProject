@@ -30,7 +30,7 @@
                         captchaImage.appendTo('#captchaContainer');
                         captchaInput.appendTo('#captchaContainer');
                         $('#captchaInput').focus(); *@
-                                                                                                                    },
+                                                                                                                        },
                     error: function () {
                         console.log('Error occurred while retrieving captcha.');
                     }
@@ -54,7 +54,7 @@
                     captchaImage.appendTo('#captchaContainer');
                     captchaInput.appendTo('#captchaContainer');
                     $('#captchaInput').focus(); *@
-                                                                                                                },
+                                                                                                                    },
                 error: function () {
                     console.log('Error occurred while retrieving captcha.');
                 }
@@ -89,16 +89,6 @@
                     }
                 },
                 {
-                    field: "CaptchaText",
-                    label: "Captcha:",
-                    validation: { required: true },
-                    editor: function (container, options) {
-                        $('<input type="text" id="CaptchaText" name="' + options.field + '" title="Captcha" required="required" autocomplete="off" aria-labelledby="CaptchaText-form-label" data-bind="value: CaptchaText" aria-describedby="CaptchaText-form-hint" placeholder="Enter captcha"/>')
-                            .appendTo(container)
-                            .kendoTextBox();
-                    }
-                },
-                {
                     field: "Captcha",
                     label: "Captcha:",
                     validation: { required: true },
@@ -106,7 +96,18 @@
                         $('<div class="captcha-container">  <img style="height:3rem;border:1.5px solid black" src="" alt=""> <input type= "hidden" name = "captchaId" ><div><i id="reset" style="margin-left:1rem; font-size: 20px; color: orange;" class="fa-solid fa-arrows-rotate"></i></div><div id="captchaDisplay"></div></div > ')
                             .appendTo(container);
                     }
+                },
+                {
+                    field: "CaptchaText",
+                    label: "",
+                    validation: { required: true },
+                    editor: function (container, options) {
+                        $('<input type="text" id="CaptchaText" name="' + options.field + '" title="Captcha" required="required" autocomplete="off" aria-labelledby="CaptchaText-form-label" data-bind="value: CaptchaText" aria-describedby="CaptchaText-form-hint" placeholder="Enter captcha"/>')
+                            .appendTo(container)
+                            .kendoTextBox();
+                    }
                 }
+
             ],
             buttonsTemplate: "<button class='k-button k-button-solid-primary k-button-solid k-button-md k-rounded-md k-form-submit' type='submit'>Login</button>"
         });

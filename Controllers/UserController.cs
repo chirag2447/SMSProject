@@ -37,7 +37,7 @@ namespace SMSProject.Controllers
         {
             return View();
         }
-       
+
 
         [HttpGet]
         public IActionResult Login()
@@ -86,8 +86,16 @@ namespace SMSProject.Controllers
 
             if (_userRepository.Login(usermodel))
             {
-                ViewBag.loginsuccess = "Login Successfully";
-                return RedirectToAction("Student","Admin");
+                if (HttpContext.Session.GetString("role") == "Admin")
+                {
+                    return RedirectToAction("index", "admin");
+                }
+                else
+                {
+
+                    ViewBag.loginsuccess = "Login Successfully";
+                    return RedirectToAction("Student", "Admin");
+                }
             }
             else
             {
