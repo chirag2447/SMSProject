@@ -86,11 +86,7 @@ namespace SMSProject.Controllers
 
             if (_userRepository.Login(usermodel))
             {
-                if (HttpContext.Session.GetString("role") == "Teacher")
-                {
-                    return RedirectToAction("index", "teacher");
-                }
-                else if (HttpContext.Session.GetString("role") == "Admin")
+                if (HttpContext.Session.GetString("role") == "Admin")
                 {
                     return RedirectToAction("index", "admin");
                 }

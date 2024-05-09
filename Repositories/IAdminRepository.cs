@@ -9,6 +9,8 @@ namespace SMSProject.Repository
 {
     public interface IAdminRepository
     {
+        public List<TreeModel> GetAllStudents();
+
         bool Insert(StudentModel stud);
         List<StudentModel> GetAllData();
         void multidelete(List<int> ids);

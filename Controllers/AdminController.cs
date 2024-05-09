@@ -76,17 +76,17 @@ namespace SMSProject.Controllers
             return Json(new { success = true });
         }
 
-        public  IActionResult ViewDatasearch(string query)
+        public IActionResult ViewDatasearch(string query)
         {
-            var students =  _adminRepository.SearchStudents(query);
+            var students = _adminRepository.SearchStudents(query);
             return Json(students);
         }
 
         public ActionResult Pagination(int pageNumber, int pageSize)
-{
-    var dökData = _adminRepository.GetDataPagination(pageNumber, pageSize);
-    return Json(dökData);
-}
+        {
+            var dökData = _adminRepository.GetDataPagination(pageNumber, pageSize);
+            return Json(dökData);
+        }
 
         public IActionResult Delete(int id)
         {
@@ -119,6 +119,16 @@ namespace SMSProject.Controllers
         {
             _adminRepository.Update(studentModel);
             return Json(new { success = true });
+        }
+
+        public IActionResult TreeList()
+        {
+            return View();
+        }
+
+        public IActionResult GetStudents()
+        {
+            return Json(_adminRepository.GetAllStudents());
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

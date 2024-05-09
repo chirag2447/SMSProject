@@ -7,7 +7,6 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
-builder.Services.AddScoped<ITeacherRepository, TeacherRepository>();
 
 
 

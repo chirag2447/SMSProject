@@ -69,14 +69,16 @@ namespace SMSProject.Repository
                         }
                     }
                 }
-            }catch(Exception e){
+            }
+            catch (Exception e)
+            {
                 Console.WriteLine(e.Message);
 
             }
             return datas;
 
         }
-      
+
         public List<UserModel> GetAllTeacherData()
         {
             List<UserModel> datas = new List<UserModel>();
@@ -262,7 +264,46 @@ namespace SMSProject.Repository
             return datas;
         }
 
-        
+        public List<TreeModel> GetAllStudents()
+        {
+            try
+            {
+                using (var con = new NpgsqlConnection(_conn))
+                {
+                    con.Open();
+                    using (var cmd = new NpgsqlCommand("SELECT * FROM t_student", con))
+                    {
+                        var reader = cmd.ExecuteReader();
+                        List<TreeModel> students = new List<TreeModel>();
+                        while (reader.Read())
+                        {
+                            var student = new TreeModel
+                            {
+                                c_id = reader.GetInt32(0),
+                                c_userid = reader.IsDBNull(1) ? (int?)null : reader.GetInt32(1),
+                                c_first_name = reader.GetString(2),
+                                c_last_name = reader.GetString(3),
+                                c_dob = reader.GetDateTime(4),
+                                c_gender = reader.GetString(5),
+                                c_age = reader.GetInt32(6),
+                                c_address = reader.GetString(7),
+                                c_contact_number = reader.GetString(8),
+                                c_profile = reader.GetString(9),
+                                c_password = reader.GetString(10)
+                            };
+                            students.Add(student);
+                        }
+                        return students;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+
 
     }
 }
