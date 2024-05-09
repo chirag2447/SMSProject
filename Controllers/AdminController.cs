@@ -14,7 +14,7 @@ namespace SMSProject.Controllers
     {
         private readonly ILogger<AdminController> _logger;
 
-         private readonly IAdminRepository _adminRepository;
+        private readonly IAdminRepository _adminRepository;
         private IWebHostEnvironment _webHostEnvironment;
 
         public AdminController(ILogger<AdminController> logger, IWebHostEnvironment webHostEnvironment, IAdminRepository studentRepository)
@@ -28,13 +28,13 @@ namespace SMSProject.Controllers
         {
             return View();
         }
-         public IActionResult Student()
+        public IActionResult Student()
         {
             TempData["Userid"] = HttpContext.Session.GetInt32("userid");
             return View();
         }
 
-         [HttpPost]
+        [HttpPost]
         public IActionResult UploadPhoto(IFormFile? photo)
         {
             try
@@ -65,12 +65,24 @@ namespace SMSProject.Controllers
             }
         }
 
-         [HttpPost]
+        [HttpPost]
         public IActionResult Student(StudentModel studModel)
         {
             _adminRepository.Insert(studModel);
             return Json(new { success = true });
         }
+
+        public  IActionResult ViewDatasearch(string query)
+        {
+            var students =  _adminRepository.SearchStudents(query);
+            return Json(students);
+        }
+
+        public ActionResult Pagination(int pageNumber, int pageSize)
+{
+    var dökData = _adminRepository.GetDataPagination(pageNumber, pageSize);
+    return Json(dökData);
+}
 
         public IActionResult Delete(int id)
         {

@@ -20,12 +20,19 @@
     <div class="mb-3">
         <h3>Student Details </h3>
     </div>
+    <input type="text" id="searchInput" placeholder="Search..." class="form-control w-25 mb-2" />
 
     <div id="grid"></div>
+    <div class="mt-2">
+        <button id="pagination-prev" class="btn btn-secondary">Previous</button>
+        <button id="pagination-next" class="btn btn-secondary">Next</button>
+    </div>
 
     @section Scripts {
         <script>
             var dataSource;
+            var pageNumber = 1;
+            var pageSize = 10;
             function multiDelete() {
                 var selectedIds = [];
                 var grid = $("#grid").data("kendoGrid");
@@ -63,9 +70,58 @@
                 });
             }
 
-            
+            function loadData(pageNumber, pageSize) {
+                $.ajax({
+                    url: "Pagination",
+                    type: "GET",
+                    data: { pageNumber: pageNumber, pageSize: pageSize },
+                    success: function (response) {
+                        dataSource.data(response);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(error);
+                    }
+                });
+            }
+
+
+
 
             $(document).ready(function () {
+
+                var searchInput = $("#searchInput");
+                searchInput.on("keypress", function (e) {
+                    if (e.which === 13) {
+                        var query = searchInput.val();
+                        $.ajax({
+                            url: "ViewDatasearch",
+                            type: "GET",
+                            data: { query: query },
+                            success: function (response) {
+                                dataSource.data(response);
+                            },
+                            error: function (xhr, status, error) {
+                                console.error(error);
+                            }
+                        });
+                    }
+                });
+
+
+
+
+                loadData(pageNumber, pageSize);
+
+                $("#pagination-prev").click(function () {
+                    pageNumber--;
+                    loadData(pageNumber, pageSize);
+                });
+
+                $("#pagination-next").click(function () {
+                    pageNumber++;
+                    loadData(pageNumber, pageSize);
+                });
+
                 var userId = parseInt('@TempData["Userid"]');
                 dataSource = new kendo.data.DataSource({
                     transport: {
@@ -119,7 +175,7 @@
                         { field: "c_id", title: "Bookid", hidden: true },
                         { field: "c_first_name", title: "First Name" },
                         { field: "c_last_name", title: "Last Name" },
-                          {
+                        {
                             field: "c_dob",
                             title: "Date",
                             template: "#= kendo.toString(new Date(c_dob), 'yyyy-MM-dd') #",
@@ -133,8 +189,18 @@
                                         var parsedDate = kendo.toString(new Date(this.value()), 'yyyy/MM/dd');
                                         var dateOnly = parsedDate.split("T")[0];
                                         options.model.set("c_dob", dateOnly);
+
+                                        var selectedDate = this.value();
+                                        var today = new Date();
+                                        var birthDate = new Date(selectedDate);
+                                        var age = today.getFullYear() - birthDate.getFullYear();
+                                        var m = today.getMonth() - birthDate.getMonth();
+                                        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                                            age--;
+                                        }
+                                        options.model.set("c_age", age);
                                     }
-                                });
+                                }).data("kendoDatePicker").trigger("change");
                             }
                         },
                         {
@@ -148,9 +214,9 @@
                                 return dataItem.c_gender;
                             }
                         },
-                       { field: "c_age", title: "AGE", type: "number" },
-                       { field: "c_address", title: "Address",},
-                       { field: "c_contactno", title: "Phone no" },
+                        { field: "c_age", title: "AGE", type: "number" },
+                        { field: "c_address", title: "Address", },
+                        { field: "c_contactno", title: "Phone no" },
                         {
                             field: "c_profile",
                             title: "Photo",
@@ -190,8 +256,8 @@
                                 });
                             }
                         },
-                       
-                       
+
+
                         { command: ["edit", "destroy"], title: "&nbsp;", width: "200px" }
                     ],
                     dataBound: function (e) {
@@ -213,7 +279,6 @@
                             e.container.find(".k-grid-update").text("Create");
                         } else {
                             popupWindow.title("Update");
-
                         }
                         e.container.find(".k-edit-label:contains('SrNo')").css("display", "none");
                         e.container.find(".k-edit-label:contains('SrNo')").next(".k-edit-field").css("display", "none");
@@ -222,8 +287,7 @@
 
 
                     },
-                    toolbar: [{ name: "create", text: "Add Data" },  "search"],
-                    pageable: true,
+                    toolbar: [{ name: "create", text: "Add Data" }],
                     sortable: true,
                     filterable: true,
                 });
