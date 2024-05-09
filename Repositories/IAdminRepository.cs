@@ -13,5 +13,7 @@ namespace SMSProject.Repository
         void multidelete(List<int> ids);
         bool Update(StudentModel book);
         void Delete(int id);
+        List<StudentModel> SearchStudents(string query);
+        List<StudentModel> GetDataPagination(int pageNumber, int pageSize);
     }
 }
