@@ -30,7 +30,7 @@
                         captchaImage.appendTo('#captchaContainer');
                         captchaInput.appendTo('#captchaContainer');
                         $('#captchaInput').focus(); *@
-                                                                                                                    },
+                                                                                                                        },
                     error: function () {
                         console.log('Error occurred while retrieving captcha.');
                     }
@@ -54,7 +54,7 @@
                     captchaImage.appendTo('#captchaContainer');
                     captchaInput.appendTo('#captchaContainer');
                     $('#captchaInput').focus(); *@
-                                                                                                                },
+                                                                                                                    },
                 error: function () {
                     console.log('Error occurred while retrieving captcha.');
                 }
@@ -99,7 +99,7 @@
                 },
                 {
                     field: "CaptchaText",
-                    label: "Captcha:",
+                    label: "",
                     validation: { required: true },
                     editor: function (container, options) {
                         $('<input type="text" id="CaptchaText" name="' + options.field + '" title="Captcha" required="required" autocomplete="off" aria-labelledby="CaptchaText-form-label" data-bind="value: CaptchaText" aria-describedby="CaptchaText-form-hint" placeholder="Enter captcha"/>')
@@ -107,7 +107,7 @@
                             .kendoTextBox();
                     }
                 }
-                
+
             ],
             buttonsTemplate: "<button class='k-button k-button-solid-primary k-button-solid k-button-md k-rounded-md k-form-submit' type='submit'>Login</button>"
         });

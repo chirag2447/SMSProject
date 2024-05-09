@@ -1,0 +1,67 @@
+@{
+    Layout = "_layout";
+}
+<div id="example">
+
+    <div id="treelist"></div>
+
+    <script id="photo-template" type="text/x-kendo-template">
+           <div class='employee-photo'
+                style='background-image: url(../content/web/treelist/people/#:data.c_id#.jpg);'></div>
+           <div class='employee-name'>#: c_first_name # #: c_last_name #</div>
+    </script>
+    @section Scripts {
+
+        <script>
+            $(document).ready(function () {
+                var dataSource = new kendo.data.TreeListDataSource({
+                    transport: {
+                        read: {
+                            url: "https://localhost:7163/teacher/getstudents",
+                            dataType: "json",
+                            error: function (e) {
+                                console.error("An error occurred while fetching the data: ", e);
+                            },
+                            success: function (data) {
+                                console.log("Data fetched from the server: ", data);
+                            }
+                        }
+                    },
+                    schema: {
+                        model: {
+                            id: "c_id",
+                            parentId: "c_userid",
+                            fields: {
+                                c_id: { type: "number" },
+                                c_userid: { nullable: true, type: "number" },
+                                c_first_name: { type: "string" },
+                                c_last_name: { type: "string" },
+                                c_dob: { type: "date" },
+                                c_gender: { type: "string" },
+                                c_age: { type: "number" },
+                                c_address: { type: "string" },
+                                c_contact_number: { type: "string" },
+                                // Add other fields as necessary
+                            }
+                        }
+                    }
+                });
+
+                $("#treelist").kendoTreeList({
+                    dataSource: dataSource,
+                    columns: [
+                        { field: "c_first_name", title: "First Name" },
+                        { field: "c_last_name", title: "Last Name" },
+                        { field: "c_dob", title: "Date of Birth", format: "{0:MM/dd/yyyy}" },
+                        { field: "c_gender", title: "Gender" },
+                        { field: "c_age", title: "Age" },
+                        { field: "c_address", title: "Address" },
+                        { field: "c_contact_number", title: "Contact Number" },
+                        // Add other fields as necessary
+                    ],
+                    template: kendo.template($("#photo-template").html())
+                });
+            });
+        </script>
+    }
+</div>
