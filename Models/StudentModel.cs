@@ -18,5 +18,6 @@ namespace mvc.Models
         public string c_contactno { get; set; }
         public string c_profile { get; set; }
         public string c_password { get; set; }
+        public string c_user_first_name {get;set;}
     }
 }
