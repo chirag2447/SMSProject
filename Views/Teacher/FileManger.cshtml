@@ -1,0 +1,75 @@
+<div id="example">
+    <div id="filemanager"></div>
+</div>
+
+@section Scripts
+{
+    <script>
+
+        function photoeditor(container, options) {
+            $('<input name="file" type="file" class="k-button k-primary" />').appendTo(container).kendoUpload({
+                async: {
+                    saveUrl: "/Teacher/UploadFile",
+                    autoUpload: true,
+                },
+                success: function (e) {
+                    var fileName = e.files[0].name;
+                    // Update the model property with the uploaded file name
+                    options.model.set("c_file", fileName);
+                    // Display success message
+                    kendo.alert("File uploaded successfully: " + fileName);
+                },
+                error: function (e) {
+                    // Display error message
+                    kendo.alert("Error uploading file: " + e.XMLHttpRequest.statusText);
+                }
+            });
+        }
+        $(document).ready(function () {
+            $.ajax({
+                url: "/Teacher/GetFiles",
+                method: "GET",
+                success: function(data) {
+                    console.log("Data retrieved from server:", data);
+                    var files = data.map(function(item) {
+                        return {
+                            name: item,
+                            size: null
+                        };
+                    });
+                    console.log("Processed files data:", files);
+
+                    $("#filemanager").kendoFileManager({
+                        dataSource: {
+                            data: files
+                        },
+                        uploadUrl: "/Teacher/UploadFile",
+                        toolbar: {
+                            items: [
+                                { name: "createFolder" },
+                                { name: "upload", template: '<button type="button" class="k-button" onclick="photoeditor(this)">Upload File</button>' },
+                                { name: "sortDirection" },
+                                { name: "sortField" },
+                                { name: "changeView" },
+                                { name: "spacer" },
+                                { name: "details" },
+                                { name: "search" }
+                            ]
+                        },
+                        contextMenu: {
+                            items: [
+                                { name: "rename" },
+                                { name: "delete" }
+                            ]
+                        },
+                        draggable: true,
+                        resizable: true
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error fetching files:", error);
+                }
+            });
+        });
+    </script>
+}

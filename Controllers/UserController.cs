@@ -61,9 +61,6 @@ namespace SMSProject.Controllers
             ViewBag.registersuccess = "Registration Successfully";
             return View();
 
-
-
-
         }
 
         [HttpPost]
@@ -87,7 +84,7 @@ namespace SMSProject.Controllers
             if (_userRepository.Login(usermodel))
             {
                 ViewBag.loginsuccess = "Login Successfully";
-                return RedirectToAction("Student","Admin");
+                return RedirectToAction("Dashboard","Teacher");
             }
             else
             {

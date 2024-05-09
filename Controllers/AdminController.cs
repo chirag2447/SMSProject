@@ -72,17 +72,17 @@ namespace SMSProject.Controllers
             return Json(new { success = true });
         }
 
-        public  IActionResult ViewDatasearch(string query)
+        public IActionResult ViewDatasearch(string query)
         {
-            var students =  _adminRepository.SearchStudents(query);
+            var students = _adminRepository.SearchStudents(query);
             return Json(students);
         }
 
         public ActionResult Pagination(int pageNumber, int pageSize)
-{
-    var dökData = _adminRepository.GetDataPagination(pageNumber, pageSize);
-    return Json(dökData);
-}
+        {
+            var dökData = _adminRepository.GetDataPagination(pageNumber, pageSize);
+            return Json(dökData);
+        }
 
         public IActionResult Delete(int id)
         {
