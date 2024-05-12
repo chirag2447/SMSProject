@@ -136,5 +136,24 @@ namespace SMSProject.Controllers
         {
             return View("Error!");
         }
+
+        [HttpGet]
+        public IActionResult GetStudentDobs()
+        {
+            // Replace with your actual repository instance
+            var students = _adminRepository.GetAllDobOfStudents();
+
+            var events = students.Select(s => new
+            {
+                title = s.c_first_name,
+                start = s.c_dob,
+                end = s.c_dob, // You might want to calculate a different end date
+                id = s.c_id
+            });
+
+            return Json(events);
+        }
+
+
     }
 }

@@ -19,6 +19,8 @@ namespace SMSProject.Repository
         List<StudentModel> SearchStudents(string query);
         List<StudentModel> GetDataPagination(int pageNumber, int pageSize);
         List<UserModel> GetAllTeacherData();
+
+        public List<StudentModel> GetAllDobOfStudents();
         
     }
 }

@@ -1,0 +1,57 @@
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Student DOBs</title>
+    <link href="https://kendo.cdn.telerik.com/themes/7.2.1/default/default-main.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://kendo.cdn.telerik.com/2022.1.119/js/kendo.all.min.js"></script>
+</head>
+<body>
+    <div id="scheduler"></div>
+
+    <script>
+        $(function() {
+            $("#scheduler").kendoScheduler({
+                date: new Date(),
+                startTime: new Date(),
+                height: 600,
+                views: [
+                    "day",
+                    { type: "workWeek", selected: true },
+                    "week",
+                    "month",
+                    "year",
+                    "agenda",
+                    { type: "timeline", eventHeight: 50}
+                ],
+                timezone: "Etc/UTC",
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: "@Url.Action("GetStudentDobs", "Admin")", // Replace with your actual controller and action
+                            dataType: "json"
+                        }
+                    },
+                    schema: {
+                        model: {
+                            id: "id",
+                            fields: {
+                                id: { from: "id", type: "number" },
+                                title: { from: "title", defaultValue: "No title", validation: { required: true } },
+                                start: { type: "date", from: "start" },
+                                end: { type: "date", from: "end" },
+                                isAllDay: { type: "boolean", defaultValue: false }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
