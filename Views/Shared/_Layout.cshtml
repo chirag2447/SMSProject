@@ -13,6 +13,8 @@
     <link rel="stylesheet" href="~/SMSProject.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2022.1.119/styles/kendo.common.min.css" />
     <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2022.1.119/styles/kendo.default.min.css" />
+    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2022.1.119/styles/kendo.default-v2.min.css" />
+
 </head>
 
 <body>
@@ -50,13 +52,12 @@
         </div>
     </footer>
     @* <script src="~/lib/jquery/dist/jquery.min.js"></script> *@
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://kendo.cdn.telerik.com/2022.1.119/js/kendo.all.min.js"></script>
-    <!-- Include script for Kendo UI captcha here -->
-    <script src="https://unpkg.com/jszip/dist/jszip.min.js"></script>
-    <script src="https://unpkg.com/pako/dist/pako_deflate.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="https://kendo.cdn.telerik.com/2022.1.119/js/jquery.min.js"></script>
+<script src="https://kendo.cdn.telerik.com/2022.1.119/js/kendo.all.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 

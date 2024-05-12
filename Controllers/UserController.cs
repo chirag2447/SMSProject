@@ -64,6 +64,14 @@ namespace SMSProject.Controllers
 
 
 
+            userModel.c_profile = profile;
+            _userRepository.AddUser(userModel);
+            ViewBag.registersuccess = "Registration Successfully";
+            return View();
+
+
+
+
         }
 
         [HttpPost]
@@ -88,11 +96,6 @@ namespace SMSProject.Controllers
             {
                 if (HttpContext.Session.GetString("role") == "Admin")
                 {
-                    return RedirectToAction("index", "admin");
-                }
-                else
-                {
-
                     ViewBag.loginsuccess = "Login Successfully";
                     return RedirectToAction("Student", "Admin");
                 }
@@ -146,6 +149,26 @@ namespace SMSProject.Controllers
             return Json(cities);
         }
 
+        [HttpGet]
+        public IActionResult Profile()
+        {
+            var sessionUserId = HttpContext.Session.GetInt32("userid");
+            if (sessionUserId.HasValue)
+            {
+                var profile = GetProfile(sessionUserId.Value);
+                return View(profile);
+            }
+            else
+            {
+                return RedirectToAction("Login", "User");
+            }
+        }
+
+        private UserModel GetProfile(int userid)
+        {
+            var profile = _userRepository.GetProfile(userid);
+            return profile;
+        }
         [HttpGet]
         public IActionResult Reset()
         {

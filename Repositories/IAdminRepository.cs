@@ -16,6 +16,7 @@ namespace SMSProject.Repository
 
         public void UpdateTask(AssignmentModel assignment);
         public void DeleteTask(int id);
+        public List<StudentModel> GetAllDobOfStudents();
 
         bool Insert(StudentModel stud);
         List<StudentModel> GetAllData();
@@ -25,5 +26,7 @@ namespace SMSProject.Repository
         List<StudentModel> SearchStudents(string query);
         List<StudentModel> GetDataPagination(int pageNumber, int pageSize);
         List<UserModel> GetAllTeacherData();
+
+
     }
 }

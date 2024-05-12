@@ -12,10 +12,13 @@ namespace SMSProject.Repository
     public class AdminRepository : IAdminRepository
     {
         private readonly string _conn;
+        private readonly NpgsqlConnection conn;
         private readonly IHttpContextAccessor _httpContextAccessor;
         public AdminRepository(IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
         {
             _conn = configuration.GetConnectionString("SMSProject");
+            conn = new NpgsqlConnection(configuration.GetConnectionString("SMSProject"));
+
             _httpContextAccessor = httpContextAccessor;
         }
         public void Delete(int id)
@@ -467,7 +470,38 @@ namespace SMSProject.Repository
             }
         }
 
-        
+        public List<StudentModel> GetAllDobOfStudents()
+        {
+            List<StudentModel> students = new List<StudentModel>();
+            try
+            {
+                conn.Open();
+                string query = "SELECT c_id, c_first_name, c_dob FROM public.t_student";
+                var cmd = new NpgsqlCommand(query, conn);
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        students.Add(new StudentModel
+                        {
+                            c_id = Convert.ToInt32(reader["c_id"]),
+                            c_first_name = reader["c_first_name"].ToString(),
+                            c_dob = Convert.ToDateTime(reader["c_dob"]),
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                if (conn.State == ConnectionState.Open)
+                    conn.Close();
+            }
+            return students;
+        }
 
     }
 }
