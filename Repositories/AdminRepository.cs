@@ -271,7 +271,7 @@ namespace SMSProject.Repository
                 using (var con = new NpgsqlConnection(_conn))
                 {
                     con.Open();
-                    using (var cmd = new NpgsqlCommand("SELECT * FROM t_student", con))
+                    using (var cmd = new NpgsqlCommand("SELECT * FROM tree", con))
                     {
                         var reader = cmd.ExecuteReader();
                         List<TreeModel> students = new List<TreeModel>();
@@ -280,16 +280,26 @@ namespace SMSProject.Repository
                             var student = new TreeModel
                             {
                                 c_id = reader.GetInt32(0),
-                                c_userid = reader.IsDBNull(1) ? (int?)null : reader.GetInt32(1),
-                                c_first_name = reader.GetString(2),
-                                c_last_name = reader.GetString(3),
-                                c_dob = reader.GetDateTime(4),
-                                c_gender = reader.GetString(5),
-                                c_age = reader.GetInt32(6),
-                                c_address = reader.GetString(7),
-                                c_contact_number = reader.GetString(8),
-                                c_profile = reader.GetString(9),
-                                c_password = reader.GetString(10)
+                                parentId = reader.IsDBNull(1) ? (int?)null : reader.GetInt32(1),
+                                c_userid = reader.IsDBNull(2) ? (int?)null : reader.GetInt32(2),
+                                c_first_name = reader.GetString(3),
+                                c_last_name = reader.GetString(4),
+                                c_gmail = reader.GetString(5),
+                                c_password = reader.GetString(6),
+                                c_phone = reader.GetString(7),
+                                c_dob = reader.GetDateTime(8),
+                                c_gender = reader.GetString(9),
+                                c_age = reader.GetInt32(10),
+                                c_country_id = reader.GetInt32(11),
+                                c_state_id = reader.GetInt32(12),
+                                c_city_id = reader.GetInt32(13),
+                                c_address = reader.GetString(14),
+                                c_language = reader.GetFieldValue<string[]>(15),
+                                c_qualification = reader.GetString(16),
+                                c_profile = reader.GetString(17),
+                                c_role = reader.GetString(18),
+                                c_contactno = reader.GetString(19)
+
                             };
                             students.Add(student);
                         }
@@ -303,7 +313,161 @@ namespace SMSProject.Repository
             }
         }
 
+        public List<TreeModel> GetTreeStudents()
+        {
+            //             try
+            //             {
+            //                 using (var con = new NpgsqlConnection(_conn))
+            //                 {
+            //                     con.Open();
+            //                     var query = @"
+            //     SELECT
+            //         t_teacher.c_id AS id,
+            //         NULL AS parentId,
+            //         t_teacher.c_first_name AS first_name,
+            //         t_teacher.c_last_name AS last_name,
+            //         t_teacher.c_profile AS profile
+            //     FROM
+            //         public.t_user AS t_teacher
+            //     UNION ALL
+            //     SELECT
+            //         t_student.c_id AS id,
+            //         t_student.c_userid AS parentId,
+            //         t_student.c_first_name AS first_name,
+            //         t_student.c_last_name AS last_name,
+            //         t_student.c_profile AS profile
+            //     FROM
+            //         public.t_student AS t_student;
+            // ";
+            //                     var cmd = new NpgsqlCommand(query, con);
+            //                     var students = new List<TreeModel>();
+            //                     var reader = cmd.ExecuteReader();
+            //                     while (reader.Read())
+            //                     {
+            //                         var person = new TreeModel
+            //                         {
+            //                             id = reader.GetInt32(0),
+            //                             parentId = reader.IsDBNull(1) ? (int?)null : reader.GetInt32(1),
+            //                             first_name = reader.GetString(2),
+            //                             last_name = reader.GetString(3),
+            //                             profile = reader.GetString(4)
+            //                         };
+            //                         students.Add(person);
+            //                     }
+            //                     return students;
 
+            //                 }
+            //             }
+            //             catch (Exception e)
+            //             {
+            //                 System.Console.WriteLine(e.Message);
+            //             }
+            return null;
+        }
+
+
+        public List<AssignmentModel> GetAssignments()
+        {
+            List<AssignmentModel> assignments = new List<AssignmentModel>();
+            try
+            {
+                using (var con = new NpgsqlConnection(_conn))
+                {
+                    con.Open();
+                    using (var cmd = new NpgsqlCommand("SELECT * FROM t_assignment", con))
+                    {
+                        var reader = cmd.ExecuteReader();
+                        while (reader.Read())
+                        {
+                            var assignment = new AssignmentModel
+                            {
+                                id = reader.GetInt32(0),
+                                title = reader.GetString(1),
+                                start = reader.GetDateTime(2),
+                                end = reader.GetDateTime(3),
+                                percentComplete = reader.GetDouble(4) / 100
+                            };
+                            assignments.Add(assignment);
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            return assignments;
+        }
+
+        public void AddAssignment(AssignmentModel aa)
+        {
+            try
+            {
+                using (var con = new NpgsqlConnection(_conn))
+                {
+                    con.Open();
+                    using (var cmd = new NpgsqlCommand(@"INSERT INTO public.t_assignment(title, start, ""end"", ""percentComplete"") VALUES ( @title, @start, @end, @percentComplete)", con))
+                    {
+                        cmd.Parameters.AddWithValue("@title", aa.title);
+                        cmd.Parameters.AddWithValue("@start", aa.start);
+                        cmd.Parameters.AddWithValue("@end", aa.end);
+                        cmd.Parameters.AddWithValue("@percentComplete", aa.percentComplete * 100);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+        }
+
+        public void UpdateTask(AssignmentModel assignment)
+        {
+            try
+            {
+                using (var con = new NpgsqlConnection(_conn))
+                {
+                    con.Open();
+                    using (var cmd = new NpgsqlCommand(@"UPDATE public.t_assignment SET title = @title, start = @start, ""end"" = @end, ""percentComplete"" = @percentComplete WHERE id = @id", con))
+                    {
+                        cmd.Parameters.AddWithValue("@id", assignment.id);
+                        cmd.Parameters.AddWithValue("@title", assignment.title);
+                        cmd.Parameters.AddWithValue("@start", assignment.start);
+                        cmd.Parameters.AddWithValue("@end", assignment.end);
+                        cmd.Parameters.AddWithValue("@percentComplete", assignment.percentComplete * 100);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
+        public void DeleteTask(int id)
+        {
+            try
+            {
+                using (var con = new NpgsqlConnection(_conn))
+                {
+                    con.Open();
+                    using (var cmd = new NpgsqlCommand("DELETE FROM public.t_assignment WHERE id = @id", con))
+                    {
+                        cmd.Parameters.AddWithValue("@id", id);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
+        
 
     }
 }

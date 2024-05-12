@@ -1,32 +1,24 @@
-using System;
-
-namespace SMSProject.Models
+namespace SMSProject.Models;
+public class TreeModel
 {
-    public class TreeModel
-    {
-        public int? c_id { get; set; }
-        public int? c_userid { get; set; }
-        public string? c_first_name { get; set; }
-        public string? c_last_name { get; set; }
-        public DateTime? c_dob { get; set; }
-        public string? c_gender { get; set; }
-        public int? c_age { get; set; }
-        public string? c_address { get; set; }
-        public string? c_contact_number { get; set; }
-        public string? c_profile { get; set; }
-        public string? c_password { get; set; }
-
-        public int GetUserIdOrDefault()
-        {
-            if (c_userid.HasValue)
-            {
-                return c_userid.Value;
-            }
-            else
-            {
-                // Return a default value when c_userid is null
-                return 0;
-            }
-        }
-    }
+    public int c_id { get; set; }
+    public int? parentId { get; set; }
+    public int? c_userid { get; set; }
+    public string c_first_name { get; set; }
+    public string c_last_name { get; set; }
+    public string c_gmail { get; set; }
+    public string c_password { get; set; }
+    public string c_phone { get; set; }
+    public DateTime c_dob { get; set; }
+    public string c_gender { get; set; }
+    public int c_age { get; set; }
+    public int c_country_id { get; set; }
+    public int c_state_id { get; set; }
+    public int c_city_id { get; set; }
+    public string c_address { get; set; }
+    public string[] c_language { get; set; }
+    public string c_qualification { get; set; }
+    public string c_profile { get; set; }
+    public string c_role { get; set; }
+    public string c_contactno { get; set; }
 }

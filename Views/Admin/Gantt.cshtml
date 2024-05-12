@@ -1,0 +1,129 @@
+@* <div id="gantt"></div>
+@section Scripts {
+
+<script>
+$(document).ready(function () {
+$("#gantt").kendoGantt({
+dataSource: {
+data: [
+{
+id: 1,
+title: "Task 1",
+start: new Date("2022-05-01"),
+end: new Date("2022-05-05"),
+percentComplete: 60 / 100 // Example progress percentage
+
+},
+{
+id: 2,
+title: "Task 2",
+start: new Date("2022-05-06"),
+end: new Date("2022-05-10"),
+percentComplete: 60 / 100 // Example progress percentage
+
+}
+]
+},
+views: [
+"day",
+{ type: "week", selected: true },
+"month"
+],
+columns: [
+{ field: "id", title: "ID", width: 60 },
+{ field: "title", title: "Task", width: 200 },
+{ field: "start", title: "Start Date", format: "{0:MM/dd/yyyy}" },
+{ field: "end", title: "End Date", format: "{0:MM/dd/yyyy}" },
+{ field: "percentComplete", title: "Progress", format: "{0}%" }
+]
+});
+});
+</script>
+} *@
+<div id="gantt"></div>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $("#gantt").kendoGantt({
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: "https://localhost:7163/admin/gettasks",
+                            dataType: "json",
+                            complete: function (e) {
+                                console.log(e.responseText);
+                                return e.responseText;
+                            }
+
+                        },
+                        create: {
+                            url: "https://localhost:7163/admin/createtask",
+                            type: "POST",
+                            complete: function (e) {
+                                console.log(e.responseText);
+                                return e.responseText;
+                            }
+                        },
+                        update: {
+                            url: "https://localhost:7163/admin/updatetask",
+                            type: "PUT",
+                            complete: function (e) {
+                                console.log(e.responseText);
+                                return e.responseText;
+                            }
+                        },
+                        destroy: {
+                            url: "https://localhost:7163/admin/deletetask",
+                            complete: function (e) {
+                                console.log(e.responseText);
+                                return e.responseText;
+                            }
+                    },
+                    parameterMap: function (data, type) {
+                        if (type !== "read") {
+                            // Format the start and end dates as strings in the format expected by the server
+                            data.start = kendo.toString(data.start, "dd-MM-yyyy");
+                            data.end = kendo.toString(data.end, "dd-MM-yyyy");
+                            console.log(data);
+                            // Return the data as a JSON string
+                            return data;
+                        }
+                    }
+                },
+                schema: {
+                    parse: function (response) {
+                        console.log(response);  // log the raw response data
+                        return response;  // parse the response data
+                    },
+        @* model: {
+            id: "id",
+            fields: {
+            id: { type: "number", editable: false, nullable: true },
+            title: { type: "string" },
+            start: { type: "date" },
+            end: { type: "date" },
+            percentComplete: { type: "number" }
+            }
+            } *@
+                                                                    },
+            error: function (e) {
+                console.error(e);
+            },
+                                                                },
+            views: [
+            "day",
+            { type: "week", selected: true },
+            "month"
+        ],
+            columns: [
+            { field: "id", title: "ID", width: 60 },
+            { field: "title", title: "Task", width: 200 },
+            { field: "start", title: "Start Date", format: "{0:MM/dd/yyyy}" },
+            { field: "end", title: "End Date", format: "{0:MM/dd/yyyy}" },
+            { field: "percentComplete", title: "Progress" }
+        ],
+            editable: true
+                                                            });
+                                                        });
+    </script>
+}

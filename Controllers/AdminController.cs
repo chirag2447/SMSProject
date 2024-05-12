@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using mvc.Models;
+using SMSProject.Models;
 using SMSProject.Repository;
 
 namespace SMSProject.Controllers
@@ -129,6 +130,42 @@ namespace SMSProject.Controllers
         public IActionResult GetStudents()
         {
             return Json(_adminRepository.GetAllStudents());
+        }
+
+        public IActionResult Gantt()
+        {
+            return View();
+        }
+
+        public IActionResult Createtask(AssignmentModel assignment)
+        {
+            if (assignment.title == "New task")
+            {
+                return Ok();
+            }
+            else
+            {
+                _adminRepository.AddAssignment(assignment);
+            }
+            return Ok();
+        }
+
+        public IActionResult UpdateTask(AssignmentModel assignment)
+        {
+            _adminRepository.UpdateTask(assignment);
+            return Ok();
+        }
+
+        public IActionResult DeleteTask(AssignmentModel ass)
+        {
+            _adminRepository.Delete(ass.id);
+            return Ok();
+        }
+
+        public IActionResult GetTasks()
+        {
+            var data = _adminRepository.GetAssignments();
+            return Ok(data);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

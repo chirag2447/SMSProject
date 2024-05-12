@@ -9,7 +9,13 @@ namespace SMSProject.Repository
 {
     public interface IAdminRepository
     {
+        public List<AssignmentModel> GetAssignments();
         public List<TreeModel> GetAllStudents();
+        public List<TreeModel> GetTreeStudents();
+        public void AddAssignment(AssignmentModel aa);
+
+        public void UpdateTask(AssignmentModel assignment);
+        public void DeleteTask(int id);
 
         bool Insert(StudentModel stud);
         List<StudentModel> GetAllData();
