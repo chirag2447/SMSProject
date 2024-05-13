@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://kendo.cdn.telerik.com/2022.1.301/styles/kendo.default-v2.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://kendo.cdn.telerik.com/2022.1.301/js/kendo.all.min.js"></script>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Dashboard</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+            </ul>
+            <span class="navbar-text">
+                Logged in as: <strong> @TempData["gmail"]</strong>
+            </span>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+    </div>
+    <h3 style="color: red;">STUDENT DETAILS</h3>
+    <button style="margin-left: 850px;" class="btn-btn-primary" asp-action="FileManger" asp-controller="Teacher">Assign Assignment</button>
+    <div id="example">
+        <div class="container mt-4">
+            <div class="cards-container"> 
+                @foreach (var student in Model)
+                {
+                    <div class="k-card" data-first-name="@student.c_first_name" data-last-name="@student.c_last_name"
+                        data-address="@student.c_address" data-contactno="@student.c_contactno"
+                        data-gender="@student.c_gender">
+                        <div class="k-card-header">
+                            <h5 class="k-card-title">@($"{student.c_first_name} {student.c_last_name}")</h5>
+                        </div>
+                        <div class="k-card-content">
+                            <img alt="Student Image" class="k-card-media" src="~/photos/@student.c_profile" />
+                            <div class="k-tooltip-overlay"></div>
+                            <div class="k-tooltip-content">
+                                <p><strong>Name:</strong> @($"{student.c_first_name} {student.c_last_name}")</p>
+                                <p><strong>Gender:</strong> @student.c_gender</p>
+                                <p><strong>Contact No:</strong> @student.c_contactno</p>
+                                <p><strong>Address:</strong> @student.c_address</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Color Picker Element -->
+    <div class="container mt-4">
+        <input id="picker" />
+    </div>
+
+    <style>
+        .cards-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .k-card {
+            position: relative;
+            width: 285px;
+            margin: 5%;
+        }
+
+        .k-card-content {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .k-card-media {
+            width: 100%;
+            height: auto;
+            transition: filter 0.3s ease-in-out;
+        }
+
+        .k-card-media:hover {
+            filter: blur(5px);
+        }
+
+        .k-tooltip-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(117, 112, 112, 0.5);
+            z-index: 1;
+            display: none;
+        }
+
+        .k-tooltip-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+            text-align: center;
+            display: none;
+            background-color: #ffffff; /* Set default background color */
+            padding: 10px; /* Add padding for better appearance */
+            font-weight: bold; /* Make text bold */
+            font-size: 16px; /* Increase font size */
+        }
+
+        .k-card:hover .k-tooltip-overlay {
+            display: block;
+        }
+
+        .k-card:hover .k-tooltip-content {
+            display: block;
+        }
+    </style>
+
+    <script>
+        $(document).ready(function () {
+            $(".k-card").kendoTooltip({
+                filter: ".k-card-media",
+                position: "top"
+            });
+
+            $("#picker").kendoColorPicker({
+                buttons: false,
+                select: function(e) {
+                    var selectedColor = e.value;
+                    $(".k-tooltip-content").css("background-color", selectedColor);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

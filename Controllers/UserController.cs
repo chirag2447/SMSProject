@@ -69,9 +69,6 @@ namespace SMSProject.Controllers
             ViewBag.registersuccess = "Registration Successfully";
             return View();
 
-
-
-
         }
 
         [HttpPost]
